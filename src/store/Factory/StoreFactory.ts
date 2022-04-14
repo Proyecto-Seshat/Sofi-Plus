@@ -25,7 +25,6 @@ export const storeFactory = function <T extends CodedEntity>(storeID: string) {
     },
     getters: {
       generateCode: state => {
-        state.codigo++;
         return state.codigo;
       },
       array: state => Object.values(state.items),
@@ -38,6 +37,7 @@ export const storeFactory = function <T extends CodedEntity>(storeID: string) {
     actions: {
       add(item: T) {
         this.items[item.codigo] = item as UnwrapRef<T>;
+        this.codigo = this.codigo + 1;
       },
       remove(item: T) {
         delete this.items[item.codigo];
