@@ -41,8 +41,8 @@
 <script lang="ts" setup>
 
 import {ref} from "vue";
-import {Articulo, useArticulosStore} from "src/store/Articulos/articulosStore";
-import {ArticulosFindComposeStrategy} from "src/store/Articulos/ArticulosFindComposeStrategy";
+import {Item, useItemsStore} from "src/store/Items/itemsStore";
+import {ItemsFindComposeStrategy} from "src/store/Items/ItemsFindComposeStrategy";
 import {useDialogPluginComponent} from 'quasar';
 
 const props = defineProps();
@@ -51,16 +51,16 @@ defineEmits([
 ]);
 const {onDialogOK, onDialogHide, onDialogCancel, dialogRef} = useDialogPluginComponent();
 
-const articulosStore = useArticulosStore();
-let searchData = ref<Articulo[]>([]);
+const itemsStore = useItemsStore();
+let searchData = ref<Item[]>([]);
 const filter = ref("");
-const searcher = new ArticulosFindComposeStrategy(filter);
+const searcher = new ItemsFindComposeStrategy(filter);
 
 function search() {
-  searchData.value = articulosStore.find(searcher);
+  searchData.value = itemsStore.find(searcher);
 }
 
-function select(articulo: Articulo) {
+function select(articulo: Item) {
   onDialogOK(articulo);
 }
 </script>

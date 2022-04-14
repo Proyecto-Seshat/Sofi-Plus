@@ -63,6 +63,7 @@
         <q-card-actions>
           <q-btn label="Cerrar" @click="()=>{
             rightDrawerOpen = false;
+            store.closeHelp();
           }" class="revert-btn full-width"/>
         </q-card-actions>
       </q-card>
@@ -97,11 +98,13 @@ const helpInfo = computed(() => {
 });
 
 watch(helpInfo, (value, oldValue) => {
-  if($q.platform.is.desktop){
-    rightDrawerOpen.value = true;
-  }else{
-    rightDrawerOpen.value = true;
-    $q.notify(value);
+  if(value!=""){
+    if($q.platform.is.desktop){
+      rightDrawerOpen.value = true;
+    }else{
+      rightDrawerOpen.value = true;
+      $q.notify(value);
+    }
   }
 })
 

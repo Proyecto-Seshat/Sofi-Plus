@@ -1,8 +1,8 @@
 <template>
   <q-page>
-    <tab-paneled-page :tabs="['Articulos', 'Servicios']">
-      <template #Articulos>
-        <articulos-managing-component/>
+    <tab-paneled-page :tabs="['Items', 'Servicios']">
+      <template #Items>
+        <items-managing-component/>
       </template>
       <template #Servicios>
         <servicios-managing-component/>
@@ -13,8 +13,9 @@
 
 <script lang="ts" setup>
 import TabPaneledPage from "components/TabPaneledPage.vue";
-import ArticulosManagingComponent from "components/Articulos/ArticulosManagingComponent.vue";
-import ServiciosManagingComponent from "components/ServiciosManagingComponent.vue";</script>
+import ItemsManagingComponent from "components/Items/ItemsManagingComponent.vue";
+import ServiciosManagingComponent from "components/ServiciosManagingComponent.vue";
+</script>
 
 <style lang="scss" scoped>
 

@@ -9,10 +9,22 @@
         </div>
         <br>
         <presentador>
-          <q-input label="Fecha"></q-input>
-          <q-input label="Cantidad"></q-input>
+          <q-input label="Fecha" v-model="fecha">
+            <template v-slot:append>
+              <q-icon class="cursor-pointer" name="event">
+                <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
+                  <q-date v-model="fecha" mask="DD/MM/YYYY">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup color="primary" flat label="Close"/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+          <q-input label="Suma de dinero"></q-input>
           <q-input label="Suma en letras"></q-input>
-          <q-input label="Por concepto de"></q-input>
+          <q-input label="Descripción/Anotaciones"></q-input>
         </presentador>
         <br>
         <presentador>
@@ -21,14 +33,16 @@
         </presentador>
         <br>
         <presentador>
-          <span v-bind="{label: '# Factura'}">001</span>
+          <helpable-input help-key="recibo:factura">
+            <span v-bind="{label: '# Factura'}">001</span>
+          </helpable-input>
           <span v-bind="{label: 'Debito'}">1234</span>
           <span v-bind="{label: 'Credito'}">123</span>
         </presentador>
         <br>
         <button-group :btns="[
             {
-              label: 'Anular',
+              label: 'Cancelar',
               fn: ()=>{
                 $q.dialog({
                 component: ModalCancelar,
@@ -69,12 +83,16 @@ import {reactive, ref} from 'vue';
 import Presentador from "components/Presentador.vue";
 import ButtonGroup from "components/ButtonGroup.vue";
 import ModalCancelar from "components/ModalCancelar.vue";
+import HelpableBtn from "components/Helpables/HelpableBtn.vue";
+import HelpableInput from "components/Helpables/HelpableInput.vue";
 
 const step = ref(1);
 const date = ref("");
 const descuento = ref(0);
 const modal = ref(false);
 const stickyHeight = ref(0);
+
+const fecha = ref(new Date().toLocaleDateString("es-ES"));
 
 const columns = [
   {

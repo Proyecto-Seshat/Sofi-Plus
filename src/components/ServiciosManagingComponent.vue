@@ -1,13 +1,16 @@
 <template>
-  <entity-managing-component :data="articulosData" :entity-schema="articulosSchema" entity="articulo"/>
+  <entity-managing-component :data="array" :entity-schema="serviciosSchema" entity="servicio" :store="store"/>
 </template>
 
 <script lang="ts" setup>
-import {ResponsiveTableSchemaField, SchemaFieldType} from "src/api/interfaces/ResponsiveTableInterfaces";
+import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
 import {reactive} from "vue";
 import EntityManagingComponent from "components/EntityManagingComponent.vue";
+import {useServiciosStore} from "src/store/Servicios/serviciosStore";
+import {storeToRefs} from "pinia";
+import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
 
-const articulosSchema: ResponsiveTableSchemaField[] = [
+const serviciosSchema: ResponsiveTableSchemaField[] = [
   {
     field: "codigo",
     label: "Codigo",
@@ -40,6 +43,11 @@ const articulosData = reactive([
     precioVenta: "123456"
   }
 ]);
+
+const store = useServiciosStore();
+
+const { array } = storeToRefs(store);
+
 </script>
 
 <style lang="scss" scoped>

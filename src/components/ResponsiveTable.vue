@@ -54,6 +54,7 @@
 <script lang="ts" setup>
 import {computed, Ref, ref} from 'vue';
 import {ResponsiveTableAction, ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
+import {date} from "quasar";
 
 const props = defineProps<{
   schema: ResponsiveTableSchemaField[],

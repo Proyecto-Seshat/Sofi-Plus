@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import {helpStore} from "src/store/helpStore";
 import {computed, h, useSlots} from "vue";
-import {QIcon, QInput} from "quasar";
+import {QField, QIcon, QInput} from "quasar";
 
 const prop = defineProps<{
   helpKey: string
@@ -32,7 +32,7 @@ const render = () => {
     slot.props!["onClick"] = (e: MouseEvent) => {
       help(e);
     };
-    return h(QInput, {
+    return h(QField, {
       class: "responsive-table-btn",
       label: slot.props!.label,
       onClick: (e: MouseEvent) => {

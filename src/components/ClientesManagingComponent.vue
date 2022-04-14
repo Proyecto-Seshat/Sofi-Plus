@@ -3,9 +3,10 @@
 </template>
 
 <script lang="ts" setup>
-import {ResponsiveTableSchemaField, SchemaFieldType} from "src/api/interfaces/ResponsiveTableInterfaces";
+import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
 import {reactive} from "vue";
 import EntityManagingComponent from "components/EntityManagingComponent.vue";
+import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
 
 const clientesSchema: ResponsiveTableSchemaField[] = [
   {

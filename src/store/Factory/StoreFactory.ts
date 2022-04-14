@@ -8,7 +8,7 @@ export interface CodedEntity {
 
 export interface StandardFactory<T> {
   items: { [key: string]: T },
-  generatedCode: number,
+  generateCode: number,
   array: T[],
   add: (item: T) => void,
   remove: (item: T) => void
@@ -19,11 +19,15 @@ export const storeFactory = function <T extends CodedEntity>(storeID: string) {
     state: () => {
       let items: { [key: string]: T } = {};
       return {
-        items: items
+        items: items,
+        codigo: 0
       }
     },
     getters: {
-      generatedCode: state => Object.keys(state.items).length + 1,
+      generateCode: state => {
+        state.codigo++;
+        return state.codigo;
+      },
       array: state => Object.values(state.items),
       find: state => {
         return (strategy: StoreFindStategy<T>) => {

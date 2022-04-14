@@ -1,6 +1,6 @@
 import {storeFactory} from "src/store/Factory/StoreFactory";
 
-export interface Articulo {
+export interface Servicio {
   codigo: number,
   descripcion: string,
   cantidad: number,
@@ -11,4 +11,4 @@ export interface Articulo {
   fechaIngreso: string
 }
 
-export const useArticulosStore = storeFactory<Articulo>('articulos');
+export const useServiciosStore = storeFactory<Servicio>('servicios');

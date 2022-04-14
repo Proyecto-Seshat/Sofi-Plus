@@ -3,125 +3,159 @@
 </template>
 
 <script lang="ts" setup>
-import {h, mergeProps, useSlots, VNode, VNodeArrayChildren, VNodeChild, VNodeNormalizedChildren} from 'vue';
+import {h, mergeProps, useSlots, VNode, VNodeArrayChildren} from 'vue';
 import {useQuasar} from "quasar";
-
-const $q = useQuasar();
 
 const slots = useSlots();
 
+const props = defineProps<{
+  break?: number
+}>();
+
 function resolveChildrenMobile() {
+  let actions: VNode[] = [];
   if (slots.action) {
-    return [
-      ...slots.default!().map((slot, index) => {
-        if (slot.props) {
-          return h(
-            'div',
-            {class: "col column"},
-            [
-              h('span', {class: "col q-pa-sm presentador-mobile-top shadow-1"}, slot.props!["label"]),
-              h('span', {class: "col q-pa-sm presentador-mobile-bottom shadow-2"}, slot)
-            ]
-          );
-        } else {
-          return (slot.children! as VNodeArrayChildren)!.map((inSlot) => {
-            return h(
-              'div',
-              {class: "col column"},
-              [
-                h('span', {class: "col q-pa-sm presentador-mobile-top shadow-1"}, (((inSlot as VNode).children as VNodeArrayChildren)[0] as VNode).props!["label"]),
-                h('span', {class: "col q-pa-sm presentador-mobile-bottom shadow-2"}, (((inSlot as VNode).children as VNodeArrayChildren)[0] as VNode))
-              ]
-            );
-          });
-        }
-      }),
-      ...slots.action!().map((action) => {
-        action.props = mergeProps(action.props!, {class: ["col"]})
-        return h(
-          action
-        )
-      })
-    ];
-  } else {
-    return slots.default!().map((slot, index) => {
-      if (slot.props) {
-        return h(
+    actions = slots.action().map((action) => {
+      action.props = mergeProps(action.props!, {class: ["col"]})
+      return h(
+        action
+      )
+    });
+  }
+  const slot = slots.default!();
+  const presentadorChildren: VNode[] = [];
+  if (slot.length > 1) {
+    slot.forEach((slot) => {
+      const unwrappedSlot = unwrapSlot(slot);
+      presentadorChildren.push(
+        h(
           'div',
           {class: "col column"},
           [
-            h('span', {class: "col q-pa-sm presentador-mobile-top shadow-1"}, slot.props!["label"]),
-            h('span', {class: "col q-pa-sm presentador-mobile-bottom shadow-2"}, slot)
+            h('span', {class: "col q-pa-sm presentador-mobile-top shadow-1"}, unwrappedSlot.label),
+            h('span', {class: "col q-pa-sm presentador-mobile-bottom shadow-2"}, unwrappedSlot.slot)
           ]
-        );
-      } else {
-        return (slot.children! as VNodeArrayChildren)!.map((inSlot) => {
-          return h(
-            'div',
-            {class: "col column"},
-            [
-              h('span', {class: "col q-pa-sm presentador-mobile-top shadow-1"}, (((inSlot as VNode).children as VNodeArrayChildren)[0] as VNode).props!["label"]),
-              h('span', {class: "col q-pa-sm presentador-mobile-bottom shadow-2"}, ((((inSlot as VNode).children as VNodeArrayChildren)[0] as VNode) as VNode))
-            ]
-          );
-        });
-      }
-    })
+        )
+      );
+    });
+  } else {
+    const unwrapped = slot[0];
+    (unwrapped.children! as VNodeArrayChildren).forEach((slot) => {
+      const unwrappedSlot = unwrapSlot((slot as VNode));
+      presentadorChildren.push(
+        h(
+          'div',
+          {class: "col column"},
+          [
+            h('span', {class: "col q-pa-sm presentador-mobile-top shadow-1"}, unwrappedSlot.label),
+            h('span', {class: "col q-pa-sm presentador-mobile-bottom shadow-2"}, unwrappedSlot.slot)
+          ]
+        )
+      );
+    });
+  }
+  return [
+    ...presentadorChildren,
+    ...actions
+  ]
+}
+
+function unwrapSlot(slot: VNode) {
+  if (slot.props) {
+    if (slot.props.label) {
+      return {label: slot.props.label ? slot.props.label : '', slot: slot};
+    } else {
+      const wrapped = (((slot.children as any).default())[0] as VNode);
+      return {label: wrapped.props!.label ? wrapped.props!.label : '', slot: slot};
+    }
+  } else {
+    const wrapped = (((slot.children as any))[0] as VNode);
+    return {label: wrapped.props!.label ? wrapped.props!.label : '', slot: slot};
   }
 }
 
-const render = () => {
-  if ($q.platform.is.desktop) {
-    return h(
-      "div", [
-        h('div', {class: "row shadow-1 presentador-mobile-top"}, slots.default!().map((slot) => {
-          if (slot.props) {
-            //@ts-ignore
-            if(slot.children){
-              (slot.children as VNodeNormalizedChildren[])
-            }
-            return h('span', {class: "col q-pa-sm"}, slot.props!["label"]? slot.props!["label"] : '');
-          } else {
-            return (((slot!.children! as VNodeArrayChildren)[0]! as VNode).children as VNodeArrayChildren)!.map((inSlot) => {
-              return h('span', {class: "col q-pa-sm"}, (inSlot! as VNode).props!["label"]);
-            });
-          }
-        })),
-        h('div', {class: ["column", "presentador-mobile-bottom", "shadow-2"]},
-          [
-            h('div',
-              {class: "row items-center"},
-              slots.default!().map((slot) => {
-                if (slot.props) {
-                  return h('span', {class: "col q-pa-sm"}, slot)
-                } else {
-                  return (slot!.children! as VNodeArrayChildren).map((inSlot) => {
-                    return h('span', {class: "col q-pa-sm"}, inSlot as VNode)
-                  });
-                }
-              })),
-            slots.action ? h('div', {class: ["row q-gutter-x-sm"]},
-              slots.action!().map((action, index, arr) => {
-                action.props = mergeProps(action.props!, {
-                  class: ["col"]
-                });
-                if (index == 0) {
-                  action.props = mergeProps(action.props!, {
-                    class: ["presentador-mobile-action-bottom-left"]
-                  });
-                }
-                if (index == arr.length - 1) {
-                  action.props = mergeProps(action.props!, {
-                    class: ["presentador-mobile-action-bottom-right"]
-                  });
-                }
-                return h(action)
-              })
-            ) : null
-          ]
-        )
+function resolveActions(actions: VNode[] | null) {
+  if (actions) {
+    console.log(actions);
+    let resolvedActions: VNode[] = actions.map((action, index, arr) => {
+      action.props = mergeProps(action.props!, {
+        class: ["col"]
+      });
+      if (index == 0) {
+        action.props = mergeProps(action.props!, {
+          class: ["presentador-mobile-action-bottom-left"]
+        });
+      }
+      if (index == arr.length - 1) {
+        action.props = mergeProps(action.props!, {
+          class: ["presentador-mobile-action-bottom-right"]
+        });
+      }
+      return h(action)
+    })
+    return h('div', {class: ["row q-gutter-x-sm"]}, resolvedActions)
+  } else {
+    return null;
+  }
+}
+
+function resolvePresentador(slot: VNode[], actions: VNode[] | null) {
+  let presentadorTopChildren: VNode[] = [];
+  let presentadorBottomChilden: VNode[] = [];
+  if (slot.length > 1) {
+    slot.forEach((slot) => {
+      const unwrappedSlot = unwrapSlot(slot);
+      presentadorTopChildren.push(h('span', {class: "col q-pa-sm"}, unwrappedSlot.label));
+      presentadorBottomChilden.push(h('span', {class: "col q-pa-sm"}, unwrappedSlot.slot));
+    });
+  } else {
+    const unwrapped = slot[0];
+    (unwrapped.children! as VNodeArrayChildren).forEach((slot) => {
+      const unwrappedSlot = unwrapSlot((slot as VNode));
+      presentadorTopChildren.push(h('span', {class: "col q-pa-sm"}, unwrappedSlot.label));
+      presentadorBottomChilden.push(h('span', {class: "col q-pa-sm"}, unwrappedSlot.slot));
+    });
+  }
+  return h("div", [
+    h('div', {class: "row shadow-1 presentador-mobile-top"}, presentadorTopChildren),
+    h('div', {class: ["column", "presentador-mobile-bottom", "shadow-2"]},
+      [
+        h('div', {class: "row items-center"}, presentadorBottomChilden),
+        resolveActions(actions)
       ]
-    );
+    )
+  ]);
+}
+
+const render = () => {
+  const itemBreak = props.break? props.break : 4;
+  if (useQuasar().platform.is.desktop) {
+    const slot = slots.default!();
+    let actions = null;
+    if (slots.action) {
+      actions = slots.action();
+    }
+    const children = [];
+    if (slot.length > 1) {
+      for (let i = 0; i < slot.length; i = i + itemBreak) {
+        if (i + itemBreak > slot.length) {
+          children.push(resolvePresentador(slot, actions));
+        } else {
+          children.push(resolvePresentador(slot, null));
+        }
+      }
+      return h('div', children);
+    } else {
+      let slotChildren = (slot[0].children as VNode[]);
+      for (let i = 0; i < slotChildren.length; i = i + itemBreak) {
+        if (i + itemBreak > slotChildren.length) {
+          children.push(resolvePresentador(slotChildren.slice(i, i + itemBreak), actions));
+        } else {
+          children.push(resolvePresentador(slotChildren.slice(i, i + itemBreak), null));
+        }
+      }
+      return h('div', children);
+    }
   } else {
     return h(
       "div",

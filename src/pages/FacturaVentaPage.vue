@@ -10,11 +10,15 @@
         <br>
         <presentador>
           <helpable-input help-key="">
-            <q-input v-model="selectedArticulo.descripcion" label="Producto" readonly @click="selectArticulo"/>
+            <q-input v-model="selectedItem.descripcion" label="Item" readonly @click="selectItem"/>
           </helpable-input>
           <helpable-input help-key="factura:cantidad">
             <q-input ref="cantidadHTML" v-model.number="cantidad" label="Cantidad" placeholder="Ingrese cantidad"
-                     type="number"></q-input>
+                     type="number">
+              <template v-slot:append>
+                <q-select v-model="cantidadUnidad" :options="cantidadOptions" emit-value map-options/>
+              </template>
+            </q-input>
           </helpable-input>
           <q-input v-model="descuento" label="Descuento" placeholder="Ingrese descuento">
             <template v-slot:append>
@@ -22,28 +26,28 @@
             </template>
           </q-input>
           <template #action>
-            <q-btn class="advance-btn" label="Añadir producto" @click="sell"/>
+            <q-btn class="advance-btn" label="Añadir item" @click="sell"/>
           </template>
         </presentador>
         <br>
         <responsive-table :actions="[
           {icon: 'delete', onClick: (item, itemIndex)=>{
-            rows.splice(itemIndex, 1)
+            items.splice(itemIndex, 1)
           }, class: 'revert-btn'}
-        ]" :data="rows" :schema="esquema" title="Items">
+        ]" :data="items" :schema="esquema" title="Items">
         </responsive-table>
         <br>
         <div v-intersection="onTotalOculto" class="col-auto row items-end justify-end relative-position">
           <q-resize-observer v-if="$q.platform.is.mobile" @resize="({height})=>{stickyHeight = height}"/>
-          <span class="col-auto q-pa-sm item-bordered shadow-2 total"><b>Total: ${{total}}</b></span>
+          <span class="col-auto q-pa-sm item-bordered shadow-2 total"><b>Total factura: ${{total}}</b></span>
         </div>
         <br>
         <presentador>
-          <q-input v-model="date" :rules="['date']" label="Fecha" mask="date">
+          <q-input v-model="fecha" label="Fecha">
             <template v-slot:append>
               <q-icon class="cursor-pointer" name="event">
                 <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
-                  <q-date v-model="date">
+                  <q-date v-model="fecha" mask="DD/MM/YYYY">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup color="primary" flat label="Close"/>
                     </div>
@@ -52,11 +56,11 @@
               </q-icon>
             </template>
           </q-input>
-          <q-input v-model="date" :rules="['date']" label="Fecha Vencimiento" mask="date">
+          <q-input v-model="fechaVencimiento" label="Fecha Vencimiento">
             <template v-slot:append>
               <q-icon class="cursor-pointer" name="event">
                 <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
-                  <q-date v-model="date">
+                  <q-date v-model="fechaVencimiento" mask="DD/MM/YYYY">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup color="primary" flat label="Close"/>
                     </div>
@@ -68,30 +72,33 @@
         </presentador>
         <br>
         <presentador>
-          <q-input label="Nit/CC"></q-input>
-          <q-input label="Nombre"></q-input>
-          <q-input label="Tipo Pago"></q-input>
+          <q-input label="Nit/CC" v-model="clienteId"></q-input>
+          <q-input label="Nombre" v-model="nombre"></q-input>
+          <q-select label="Tipo Pago" v-model="tipoPago" :options="['Efectivo', 'Credito']"></q-select>
         </presentador>
         <q-card-section>
           <button-group :btns="[
             {
-              label: 'Anular',
+              label: 'Cancelar',
               fn: ()=>{
                 $q.dialog({
                 component: ModalCancelar,
                 componentProps: {
-                  mensaje: '¿Seguro que quieres anular?'
+                  mensaje: '¿Seguro que quieres cancelar?'
                 }
-                }).onOk(payload => {
-                  $q.notify('Anulado');
+                }).onOk(payload => {x
+                  $q.notify('Factura cancelada');
+                  resetData();
+
                 }).onCancel(() => {
-                  $q.notify('Cancelado')
+                  $q.notify('Cancelado');
                 })
               },
-              class: 'revert-btn'
+              class: 'revert-btn',
+              weight: 4
             },
             {
-              label: 'PDF',
+              label: 'Documento para impresión',
               fn: ()=>{
                 $q.notify('Sirve');
               }
@@ -100,27 +107,30 @@
               label: 'Guardar',
               fn: ()=>{
                 $q.notify('Sirve');
-              }
+              },
+              weight: 5
             }
             ]"/>
         </q-card-section>
       </q-card-section>
     </q-card>
     <q-page-sticky v-if="!totalVisible" expand position="top">
-      <span class="shadow-2 total bg-white full-width text-center"><b>Total: ${{total}}</b></span>
+      <span class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{total}}</b></span>
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import {computed, onMounted, reactive, Ref, ref} from 'vue';
+import ModalCancelar from "components/ModalCancelar.vue";
 import Presentador from "components/Presentador.vue";
 import ButtonGroup from "components/ButtonGroup.vue";
 import ResponsiveTable from "components/ResponsiveTable.vue";
 import HelpableInput from "components/Helpables/HelpableInput.vue";
-import ArticulosModalSelector from "components/Articulos/ArticulosModalSelector.vue";
-import {Articulo} from "src/store/Articulos/articulosStore";
+import ItemsModalSelector from "components/Items/ItemsModalSelector.vue";
+import {Item, useItemsStore} from "src/store/Items/itemsStore";
 import {QInput, useQuasar} from "quasar";
+import {MeasureEngine} from "src/api/Items/MeasureEngine";
 
 interface ItemFactura {
   item: string
@@ -138,6 +148,15 @@ const stickyHeight = ref(0);
 const cantidadHTML: Ref<QInput | null> = ref(null)
 onMounted(() => {
 });
+const itemStore = useItemsStore();
+
+const cantidadOptions = ref([{
+  label: "",
+  value: ""
+}]);
+
+const cantidadUnidad = ref('');
+
 const columns = [
   {
     name: 'item',
@@ -153,7 +172,7 @@ const columns = [
   {name: 'cantidad', label: 'Cantidad', field: 'cantidad'},
   {name: 'total', label: 'Total', field: 'total'}
 ]
-const rows = reactive<ItemFactura[]>([]);
+let items = reactive<ItemFactura[]>([]);
 const esquema = [
   {
     field: "item",
@@ -186,10 +205,12 @@ const esquema = [
     label: "Total"
   }
 ];
-const selectedArticulo = ref<Articulo>({
+const selectedItem = ref<Item>({
   descripcion: "",
   codigo: 0,
   cantidad: 0,
+  dimension: "",
+  unidadPreferida: "",
   costeTotal: 0,
   costeUnitario: 0,
   fechaIngreso: "",
@@ -197,11 +218,16 @@ const selectedArticulo = ref<Articulo>({
   precioVenta: 0
 });
 
-function selectArticulo() {
+function selectItem() {
   $q.dialog({
-    component: ArticulosModalSelector,
-  }).onOk((articulo: Articulo) => {
-    selectedArticulo.value = articulo;
+    component: ItemsModalSelector,
+  }).onOk((articulo: Item) => {
+    selectedItem.value = articulo;
+    cantidadOptions.value = Object.entries(MeasureEngine.instance().getUnits(selectedItem.value.dimension)).map((value)=>{
+      return {label: value[1].symbol, value: value[0]};
+    });
+    const baseUnit = MeasureEngine.instance().dimensions[selectedItem.value.dimension].baseUnit;
+    cantidadUnidad.value = MeasureEngine.instance().getUnits(selectedItem.value.dimension)[baseUnit].symbol;
     setTimeout(() => {
       cantidadHTML.value!.focus();
       cantidadHTML.value!.select();
@@ -215,7 +241,7 @@ const descuentoType = ref('%');
 
 function sell() {
   let descuentoLocal = '0%';
-  let total = selectedArticulo.value.precioVenta * cantidad.value;
+  let total = selectedItem.value.precioVenta * cantidad.value;
   if (descuento.value !== 0) {
     if (descuentoType.value === '%') {
       total -= total * (descuento.value / 100);
@@ -225,19 +251,21 @@ function sell() {
       descuentoLocal = `$${descuento.value}`
     }
   }
-  rows.push({
-    codigo: selectedArticulo.value.codigo,
-    item: selectedArticulo.value.descripcion,
-    impuesto: selectedArticulo.value.impuesto,
-    precio: selectedArticulo.value.precioVenta,
+  items.push({
+    codigo: selectedItem.value.codigo,
+    item: selectedItem.value.descripcion,
+    impuesto: selectedItem.value.impuesto,
+    precio: selectedItem.value.precioVenta,
     descuento: descuentoLocal,
     cantidad: cantidad.value,
     total: total
   });
-  selectedArticulo.value = {
+  selectedItem.value = {
     descripcion: "",
     codigo: 0,
     cantidad: 0,
+    dimension: "",
+    unidadPreferida: "",
     costeTotal: 0,
     costeUnitario: 0,
     fechaIngreso: "",
@@ -250,7 +278,7 @@ function sell() {
 
 const total = computed(() => {
   let totalLocal = 0;
-  rows.forEach((row) => {
+  items.forEach((row) => {
     totalLocal += row.total;
   });
   return totalLocal;
@@ -261,6 +289,36 @@ const totalVisible = ref(true);
 function onTotalOculto(entry: any) {
   totalVisible.value = entry.isIntersecting;
 }
+
+const fecha: Ref<string> = ref(new Date().toLocaleDateString("es-ES"));
+const fechaVencimiento: Ref<string> = ref(new Date().toLocaleDateString("es-ES"));
+const clienteId: Ref<string> = ref('');
+const nombre: Ref<string> = ref('');
+const tipoPago: Ref<string> = ref('');
+
+function resetData(){
+  items = [];
+  selectedItem.value = {
+    descripcion: "",
+    codigo: 0,
+    cantidad: 0,
+    dimension: "",
+    unidadPreferida: "",
+    costeTotal: 0,
+    costeUnitario: 0,
+    fechaIngreso: "",
+    impuesto: 0,
+    precioVenta: 0
+  };
+  cantidad.value = 0;
+  descuento.value = 0;
+  fecha.value = '';
+  fechaVencimiento.value = '';
+  clienteId.value = '';
+  nombre.value = '';
+  tipoPago.value = '';
+}
+
 </script>
 <style lang="scss" scoped>
 .total {
