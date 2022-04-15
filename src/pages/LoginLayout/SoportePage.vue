@@ -8,7 +8,7 @@
       <div class="col-auto row q-gutter-y-md login-input">
         <span class="texto">Telefono: 601-123-456</span>
       </div>
-      <a class="col-auto" href="/#"><b>Volver</b></a>
+      <a class="col-auto" href="/public#"><b>Volver</b></a>
     </q-card-section>
   </q-card>
 </template>

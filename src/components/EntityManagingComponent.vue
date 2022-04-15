@@ -198,7 +198,7 @@ function saveAction() {
 
 function editAction(item: any, itemIndex: number) {
   props.entitySchema.forEach((field, fieldIndex) => {
-    holders[fieldIndex] = item[field.field];
+    holders[field.field].value = item[field.field];
   });
   editFlag.value = itemIndex;
 }
@@ -206,7 +206,7 @@ function editAction(item: any, itemIndex: number) {
 function editSaveAction() {
   try {
     props.entitySchema.forEach((field, fieldIndex) => {
-      props.data[editFlag.value][field.field] = holders[fieldIndex];
+      props.data[editFlag.value][field.field] = holders[field.field].value;
     });
     editFlag.value = -1;
   } catch (e) {

@@ -40,7 +40,7 @@
       </div>
       <div class="column drawer-overflow">
         <q-item v-for="(link, index) in getPermissions" :key="link" :to="`/usr=123456/${index}`" active-class="link-activo"
-                class="link-inactivo">
+                class="link-inactivo" :disable="!linksHabilitados[link]">
           <!--          <q-item-section side>-->
           <!--            <q-btn flat icon="info" round @click.prevent="cargarInfo(index)"/>-->
           <!--          </q-item-section>-->
@@ -92,6 +92,11 @@ const store = helpStore();
 const {getPermissions, name, role} = storeToRefs(userStore());
 const {capitalize} = format;
 const router = useRouter();
+
+const linksHabilitados = {
+  "FACTURA DE  VENTA": true,
+  "INVENTARIO": true
+};
 
 const helpInfo = computed(() => {
   return store.helpInfo;

@@ -39,7 +39,7 @@ const btns = [
     class: "revert-btn"
   },
   {
-    label: "OK",
+    label: "Si",
     fn: () => {
       onDialogOK()
     }
