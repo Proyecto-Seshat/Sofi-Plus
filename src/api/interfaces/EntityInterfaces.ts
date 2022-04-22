@@ -10,4 +10,6 @@ export interface EntityFieldSchema {
   formatter?: Function;
   options?: string[];
   computedOptions?: ComputedField;
+  prefix?: string;
+  suffix?: string;
 }

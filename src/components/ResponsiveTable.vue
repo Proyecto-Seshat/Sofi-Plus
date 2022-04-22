@@ -5,16 +5,20 @@
       <thead class="bg-subs">
       <tr>
         <th v-for="col in schema" :key="`table-${col.field}`" class="text-left">{{ col.label }}</th>
-        <th style="{max-width: 100%; white-space: nowrap}" ></th>
+        <th style="{max-width: 100%; white-space: nowrap}"></th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(item, itemIndex) in data" :key="`table-item-${itemIndex}`">
-        <td v-for="col in schema" :key="`table-item-${itemIndex}-${col.field}`" class="text-left">{{ item[col.field] }}
+        <td v-for="col in schema" :key="`table-item-${itemIndex}-${col.field}`" class="text-left">
+          {{ col.prefix ? col.prefix : "" }}{{
+            col.formatter ? col.formatter(item[col.field]) : item[col.field]
+          }}{{ col.suffix ? col.suffix : "" }}
         </td>
         <td class="text-center" style="{max-width: 100%; white-space: nowrap}">
           <div class="row q-gutter-x-sm">
-            <q-btn v-for="(action, actionIndex) in actions" :class="[action.class? action.class : '', 'col']" :icon="action.icon"
+            <q-btn v-for="(action, actionIndex) in actions" :class="[action.class? action.class : '', 'col']"
+                   :icon="action.icon"
                    :label]="action.label" @click="action.onClick(item, itemIndex)"/>
           </div>
         </td>
@@ -35,12 +39,16 @@
             <q-list separator>
               <q-item v-for="col in responsiveCols" :key="`table-card-${index}-${col.field}`">
                 <q-item-section>
-                  <q-item-label>{{ col.label }}: {{ item[col.field] }}</q-item-label>
+                  <q-item-label>{{ col.label }}: {{ col.prefix ? col.prefix : "" }}{{
+                      col.formatter ? col.formatter(item[col.field]) : item[col.field]
+                    }}{{ col.suffix ? col.suffix : "" }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
             <div class="row q-gutter-x-sm">
-              <q-btn v-for="(action, actionIndex) in actions" :class="[action.class? action.class : '', 'col']" :icon="action.icon"
+              <q-btn v-for="(action, actionIndex) in actions" :class="[action.class? action.class : '', 'col']"
+                     :icon="action.icon"
                      :label]="action.label" v-bind="action.class? {} : {outline: true}"
                      @click="action.onClick(item, index)"/>
             </div>
@@ -54,7 +62,6 @@
 <script lang="ts" setup>
 import {computed, Ref, ref} from 'vue';
 import {ResponsiveTableAction, ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
-import {date} from "quasar";
 
 const props = defineProps<{
   schema: ResponsiveTableSchemaField[],
@@ -81,6 +88,7 @@ function selectIndex(index: number) {
 
 
 
+
   .q-table__top,
   .q-table__bottom,
   thead tr:first-child th
@@ -95,6 +103,7 @@ function selectIndex(index: number) {
     top: 0
 
   /* this is when the loading indicator appears */
+
 
 
 

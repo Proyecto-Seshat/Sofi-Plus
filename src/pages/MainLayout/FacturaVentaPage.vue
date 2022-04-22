@@ -26,7 +26,7 @@
             </template>
           </q-input>
           <template #action>
-            <q-btn class="advance-btn" label="Añadir item" @click="sell"/>
+            <q-btn class="advance-btn" label="Agregar item" @click="sell"/>
           </template>
         </presentador>
         <br>
@@ -39,7 +39,7 @@
         <br>
         <div v-intersection="onTotalOculto" class="col-auto row items-end justify-end relative-position">
           <q-resize-observer v-if="$q.platform.is.mobile" @resize="({height})=>{stickyHeight = height}"/>
-          <span class="col-auto q-pa-sm item-bordered shadow-2 total"><b>Total factura: ${{total}}</b></span>
+          <span class="col-auto q-pa-sm item-bordered shadow-2 total"><b>Total factura: ${{presentCurrency(total)}}</b></span>
         </div>
         <br>
         <presentador>
@@ -115,7 +115,7 @@
       </q-card-section>
     </q-card>
     <q-page-sticky v-if="!totalVisible" expand position="top">
-      <span class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{total}}</b></span>
+      <span class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{presentCurrency(total)}}</b></span>
     </q-page-sticky>
   </q-page>
 </template>
@@ -131,6 +131,9 @@ import ItemsModalSelector from "components/Items/ItemsModalSelector.vue";
 import {Item, useItemsStore} from "src/store/Items/itemsStore";
 import {QInput, useQuasar} from "quasar";
 import {MeasureEngine} from "src/api/Items/MeasureEngine";
+import {presentCurrency} from "src/api/Utils/CurrencyFormat";
+import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
+import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
 
 interface ItemFactura {
   item: string
@@ -173,36 +176,48 @@ const columns = [
   {name: 'total', label: 'Total', field: 'total'}
 ]
 let items = reactive<ItemFactura[]>([]);
-const esquema = [
+const esquema: ResponsiveTableSchemaField[] = [
   {
     field: "item",
-    label: "Item"
+    label: "Item",
+    type: SchemaFieldType.STRING
   },
   {
     field: "codigo",
-    label: "Codigo"
+    label: "Codigo",
+    type: SchemaFieldType.NUMBER
   },
   {
     field: "precio",
     label: "Precio",
-    responsive: true
+    responsive: true,
+    type: SchemaFieldType.NUMBER,
+    formatter: presentCurrency,
+    prefix: "$"
   },
   {
     field: "descuento",
-    label: "Descuento"
+    label: "Descuento",
+    type: SchemaFieldType.NUMBER
   },
   {
     field: "impuesto",
-    label: "Impuesto"
+    label: "Impuesto",
+    type: SchemaFieldType.NUMBER
   },
   {
     field: "cantidad",
     label: "Cantidad",
-    responsive: true
+    responsive: true,
+    type: SchemaFieldType.NUMBER,
+    formatter: presentCurrency
   },
   {
     field: "total",
-    label: "Total"
+    label: "Total",
+    type: SchemaFieldType.NUMBER,
+    formatter: presentCurrency,
+    prefix: "$"
   }
 ];
 const selectedItem = ref<Item>({

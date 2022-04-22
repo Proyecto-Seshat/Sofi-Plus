@@ -8,11 +8,15 @@
     <presentador v-if="newFlag || editFlag !== -1" :break="3">
       <template v-for="field in entitySchema">
         <q-input v-if="field.type === SchemaFieldType.STRING" v-model="holders[field.field].value" :label="field.label"
-                 type="text"/>
+                 type="text" v-bind:suffix="field.suffix? field.suffix : undefined"
+                 v-bind:prefix="field.prefix? field.prefix : undefined"/>
         <q-input v-else-if="field.type === SchemaFieldType.NUMBER" v-model.number="holders[field.field].value"
-                 :label="field.label"
+                 :label="field.label" v-bind:suffix="field.suffix? field.suffix : undefined"
+                 v-bind:prefix="field.prefix? field.prefix : undefined"
                  type="number"/>
-        <q-input v-else-if="field.type === SchemaFieldType.DATE" v-model="holders[field.field].value" :label="field.label">
+        <q-input v-else-if="field.type === SchemaFieldType.DATE" v-model="holders[field.field].value"
+                 :label="field.label" v-bind:suffix="field.suffix? field.suffix : undefined"
+                 v-bind:prefix="field.prefix? field.prefix : undefined">
           <template v-slot:append>
             <q-icon class="cursor-pointer" name="event">
               <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
@@ -26,7 +30,8 @@
           </template>
         </q-input>
         <q-select v-else-if="field.type === SchemaFieldType.SELECTION" v-model="holders[field.field].value"
-                  :label="field.label" :options="field.computedOptions? computedOptions[field.field].value : field.options"/>
+                  :label="field.label"
+                  :options="field.computedOptions? computedOptions[field.field].value : field.options"/>
       </template>
     </presentador>
     <helpable-btn v-if="!newFlag && editFlag===-1" help-key="terceros">
@@ -48,7 +53,6 @@
 <script lang="ts" setup>
 import {
   defineProps,
-  onBeforeUnmount,
   onMounted,
   onUnmounted,
   Ref,
@@ -184,7 +188,6 @@ function cancelAction() {
 }
 
 function saveAction() {
-  console.log(holders);
   let newEntity: { [key: string]: any } = {};
   props.entitySchema.forEach(field => {
     newEntity[field.field] = holders[field.field].value;

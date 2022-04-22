@@ -9,6 +9,8 @@ export interface ResponsiveTableSchemaField{
   computed?: ComputedField;
   formatter?: Function;
   options?: string[];
+  prefix?: string;
+  suffix?: string;
 }
 export interface ResponsiveTableAction{
   icon?: string;

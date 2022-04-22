@@ -32,7 +32,7 @@ const {dialogRef, onDialogOK, onDialogHide, onDialogCancel} = useDialogPluginCom
 
 const btns = [
   {
-    label: "Cancelar",
+    label: "No",
     fn: () => {
       onDialogCancel()
     },

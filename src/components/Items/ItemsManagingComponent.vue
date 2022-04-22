@@ -55,7 +55,8 @@ const itemsSchema: EntityFieldSchema[] = [
     field: "impuesto",
     label: "Impuesto",
     responsive: true,
-    type: SchemaFieldType.NUMBER
+    type: SchemaFieldType.NUMBER,
+    prefix: "%"
   },
   {
     field: "costeUnitario",
