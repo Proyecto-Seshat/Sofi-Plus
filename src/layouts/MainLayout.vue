@@ -1,5 +1,5 @@
 <template>
-  <q-layout class="overlay" view="hHh lpR fFf">
+  <q-layout class="overlay" view="hHh lpr fFf">
     <q-header class="bg-javeriana" elevated>
       <q-toolbar>
         <q-btn class="q-mr-sm" dense flat icon="menu" round @click="openDrawer"/>
@@ -40,10 +40,7 @@
       </div>
       <div class="column drawer-overflow">
         <q-item v-for="(link, index) in getPermissions" :key="link" :to="`/usr=123456/${index}`" active-class="link-activo"
-                class="link-inactivo" :disable="!linksHabilitados[link]">
-          <!--          <q-item-section side>-->
-          <!--            <q-btn flat icon="info" round @click.prevent="cargarInfo(index)"/>-->
-          <!--          </q-item-section>-->
+                class="link-inactivo">
           <q-item-section>
             <q-item-label class="text-right">{{ link }}</q-item-label>
           </q-item-section>
@@ -92,11 +89,6 @@ const store = helpStore();
 const {getPermissions, name, role} = storeToRefs(userStore());
 const {capitalize} = format;
 const router = useRouter();
-
-const linksHabilitados = {
-  "FACTURA DE  VENTA": true,
-  "INVENTARIO": true
-};
 
 const helpInfo = computed(() => {
   return store.helpInfo;
