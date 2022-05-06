@@ -42,9 +42,7 @@
 
 import {ref} from "vue";
 import {useItemsStore} from "src/store/Items/itemsStore";
-import {ItemsFindComposeStrategy} from "src/store/Items/ItemsFindComposeStrategy";
 import {useDialogPluginComponent} from 'quasar';
-import {ItemEntity} from "src/entities/ItemEntity";
 
 const props = defineProps();
 defineEmits([
@@ -53,7 +51,7 @@ defineEmits([
 const {onDialogOK, onDialogHide, onDialogCancel, dialogRef} = useDialogPluginComponent();
 
 const itemsStore = useItemsStore();
-let searchData = ref<ItemEntity[]>([]);
+let searchData = ref<Item[]>([]);
 const filter = ref("");
 const searcher = new ItemsFindComposeStrategy(filter);
 
@@ -61,7 +59,7 @@ function search() {
   searchData.value = itemsStore.find(searcher);
 }
 
-function select(articulo: ItemEntity) {
+function select(articulo: Item) {
   onDialogOK(articulo);
 }
 </script>

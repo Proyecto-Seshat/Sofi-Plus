@@ -1,16 +1,4 @@
 import {storeFactory} from "src/store/Factory/StoreFactory";
+import {ItemEntity} from "src/entities/ItemEntity";
 
-export interface Item {
-  codigo: number,
-  descripcion: string,
-  cantidad: number,
-  dimension: string,
-  unidadPreferida: string,
-  impuesto: number,
-  costeUnitario: number,
-  costeTotal: number,
-  precioVenta: number,
-  fechaIngreso: string
-}
-
-export const useItemsStore = storeFactory<Item>('items');
+export const useItemsStore = storeFactory<ItemEntity>('items');

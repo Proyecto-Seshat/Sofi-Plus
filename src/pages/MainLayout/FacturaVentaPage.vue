@@ -34,20 +34,21 @@
           {icon: 'delete', onClick: (item, itemIndex)=>{
             items.splice(itemIndex, 1)
           }, class: 'revert-btn'}
-        ]" :data="items" :schema="esquema" title="Items">
+        ]" :data="newFactura.detalles" :schema="esquema" title="Items">
         </responsive-table>
         <br>
         <div v-intersection="onTotalOculto" class="col-auto row items-end justify-end relative-position">
           <q-resize-observer v-if="$q.platform.is.mobile" @resize="({height})=>{stickyHeight = height}"/>
-          <span class="col-auto q-pa-sm item-bordered shadow-2 total"><b>Total factura: ${{presentCurrency(total)}}</b></span>
+          <span
+            class="col-auto q-pa-sm item-bordered shadow-2 total"><b>Total factura: ${{ presentCurrency(total) }}</b></span>
         </div>
         <br>
         <presentador>
-          <q-input v-model="fecha" label="Fecha">
+          <q-input v-model="newFactura.fecha" label="Fecha">
             <template v-slot:append>
               <q-icon class="cursor-pointer" name="event">
                 <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
-                  <q-date v-model="fecha" mask="DD/MM/YYYY">
+                  <q-date v-model="newFactura.fecha" mask="DD/MM/YYYY">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup color="primary" flat label="Close"/>
                     </div>
@@ -56,11 +57,11 @@
               </q-icon>
             </template>
           </q-input>
-          <q-input v-model="fechaVencimiento" label="Fecha Vencimiento">
+          <q-input v-model="newFactura.fechaVencimiento" label="Fecha Vencimiento">
             <template v-slot:append>
               <q-icon class="cursor-pointer" name="event">
                 <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
-                  <q-date v-model="fechaVencimiento" mask="DD/MM/YYYY">
+                  <q-date v-model="newFactura.fechaVencimiento" mask="DD/MM/YYYY">
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup color="primary" flat label="Close"/>
                     </div>
@@ -72,9 +73,9 @@
         </presentador>
         <br>
         <presentador>
-          <q-input label="Nit/CC" v-model="clienteId"></q-input>
+          <q-input label="Nit/CC" v-model="newFactura.clienteID"></q-input>
           <q-input label="Nombre" v-model="nombre"></q-input>
-          <q-select label="Tipo Pago" v-model="tipoPago" :options="['Efectivo', 'Credito']"></q-select>
+          <q-select label="Tipo Pago" v-model="newFactura.tipoPago" :options="['Efectivo', 'Credito']"></q-select>
         </presentador>
         <q-card-section>
           <button-group :btns="[
@@ -92,22 +93,18 @@
 
                 }).onCancel(() => {
                   $q.notify('Cancelado');
-                })
+                });
               },
               class: 'revert-btn',
               weight: 4
             },
             {
               label: 'Documento para impresión',
-              fn: ()=>{
-                $q.notify('Sirve');
-              }
+              fn: printFactura
             },
             {
               label: 'Guardar',
-              fn: ()=>{
-                $q.notify('Sirve');
-              },
+              fn: saveFactura,
               weight: 5
             }
             ]"/>
@@ -115,7 +112,8 @@
       </q-card-section>
     </q-card>
     <q-page-sticky v-if="!totalVisible" expand position="top">
-      <span class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{presentCurrency(total)}}</b></span>
+      <span
+        class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{ presentCurrency(total) }}</b></span>
     </q-page-sticky>
   </q-page>
 </template>
@@ -128,22 +126,14 @@ import ButtonGroup from "components/ButtonGroup.vue";
 import ResponsiveTable from "components/ResponsiveTable.vue";
 import HelpableInput from "components/Helpables/HelpableInput.vue";
 import ItemsModalSelector from "components/Items/ItemsModalSelector.vue";
-import {Item, useItemsStore} from "src/store/Items/itemsStore";
+import {useItemsStore} from "src/store/Items/itemsStore";
 import {QInput, useQuasar} from "quasar";
 import {MeasureEngine} from "src/api/Items/MeasureEngine";
-import {presentCurrency} from "src/api/Utils/CurrencyFormat";
+import {presentCurrency} from "src/api/utils/CurrencyFormat";
 import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
-
-interface ItemFactura {
-  item: string
-  codigo: number
-  precio: number
-  descuento: string
-  impuesto: number,
-  cantidad: number,
-  total: number
-}
+import {ItemEntity} from "src/entities/ItemEntity";
+import {FacturaEntity} from "src/entities/FacturaEntity";
 
 const $q = useQuasar();
 const date = ref("");
@@ -152,6 +142,8 @@ const cantidadHTML: Ref<QInput | null> = ref(null)
 onMounted(() => {
 });
 const itemStore = useItemsStore();
+
+const newFactura: Ref<FacturaEntity> = ref(new FacturaEntity({}));
 
 const cantidadOptions = ref([{
   label: "",
@@ -220,25 +212,14 @@ const esquema: ResponsiveTableSchemaField[] = [
     prefix: "$"
   }
 ];
-const selectedItem = ref<Item>({
-  descripcion: "",
-  codigo: 0,
-  cantidad: 0,
-  dimension: "",
-  unidadPreferida: "",
-  costeTotal: 0,
-  costeUnitario: 0,
-  fechaIngreso: "",
-  impuesto: 0,
-  precioVenta: 0
-});
+const selectedItem = ref<ItemEntity>(new ItemEntity({}));
 
 function selectItem() {
   $q.dialog({
     component: ItemsModalSelector,
-  }).onOk((articulo: Item) => {
+  }).onOk((articulo: ItemEntity) => {
     selectedItem.value = articulo;
-    cantidadOptions.value = Object.entries(MeasureEngine.instance().getUnits(selectedItem.value.dimension)).map((value)=>{
+    cantidadOptions.value = Object.entries(MeasureEngine.instance().getUnits(selectedItem.value.dimension)).map((value) => {
       return {label: value[1].symbol, value: value[0]};
     });
     const baseUnit = MeasureEngine.instance().dimensions[selectedItem.value.dimension].baseUnit;
@@ -277,7 +258,7 @@ function sell() {
   });
   selectedItem.value = {
     descripcion: "",
-    codigo: 0,
+    codigo: "",
     cantidad: 0,
     dimension: "",
     unidadPreferida: "",
@@ -305,17 +286,13 @@ function onTotalOculto(entry: any) {
   totalVisible.value = entry.isIntersecting;
 }
 
-const fecha: Ref<string> = ref(new Date().toLocaleDateString("es-ES"));
-const fechaVencimiento: Ref<string> = ref(new Date().toLocaleDateString("es-ES"));
-const clienteId: Ref<string> = ref('');
 const nombre: Ref<string> = ref('');
-const tipoPago: Ref<string> = ref('');
 
-function resetData(){
-  items = [];
+function resetData() {
+  newFactura.value = new FacturaEntity({});
   selectedItem.value = {
     descripcion: "",
-    codigo: 0,
+    codigo: "",
     cantidad: 0,
     dimension: "",
     unidadPreferida: "",
@@ -327,11 +304,16 @@ function resetData(){
   };
   cantidad.value = 0;
   descuento.value = 0;
-  fecha.value = '';
-  fechaVencimiento.value = '';
-  clienteId.value = '';
   nombre.value = '';
-  tipoPago.value = '';
+}
+
+function printFactura(){
+
+}
+
+function saveFactura(){
+  newFactura.value.total = total.value;
+  console.log(newFactura);
 }
 
 </script>

@@ -13,7 +13,7 @@ const routes: RouteRecordRaw[] = [
     path: '/usr=:user/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      {path: '0', component: () => import('pages/MainLayout/FacturaVentaPage.vue')},
+      {path: '0', component: () => import('pages/MainLayout/MenuPrincipal.vue')},
       {path: '1', component: () => import('pages/MainLayout/FacturaVentaPage.vue')},
       {path: '2', component: () => import('pages/MainLayout/ReciboDeCajaPage.vue')},
       {path: '3', component: () => import('pages/MainLayout/ComprobanteEgresoPage.vue')},

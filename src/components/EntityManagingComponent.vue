@@ -32,6 +32,19 @@
         <q-select v-else-if="field.type === SchemaFieldType.SELECTION" v-model="holders[field.field].value"
                   :label="field.label"
                   :options="field.computedOptions? computedOptions[field.field].value : field.options"/>
+        <q-field v-else-if="field.type === SchemaFieldType.DIALOG" :label="field.label"
+                 v-bind:suffix="field.suffix? field.suffix : undefined"
+                 v-bind:prefix="field.prefix? field.prefix : undefined"
+                 @click="()=>{
+                   $q.dialog({
+                      component: field.dialog.component,
+                    }).onOk(payload => {holders[field.field].value = field.dialog.onSuccess(payload)}).onCancel(field.dialog.onFailure());
+                 }"
+        >
+          <template v-slot:control>
+            <div class="self-center full-width no-outline" tabindex="0">{{ holders[field.field].value }}</div>
+          </template>
+        </q-field>
       </template>
     </presentador>
     <helpable-btn v-if="!newFlag && editFlag===-1" help-key="terceros">
@@ -69,6 +82,7 @@ import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 import {StandardFactory} from "src/store/Factory/StoreFactory";
 import HelpableBtn from "components/Helpables/HelpableBtn.vue";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
+import {getNewDateString} from "src/api/utils/DateFormat";
 
 const $q = useQuasar();
 
@@ -90,7 +104,7 @@ function setField(field: EntityFieldSchema): Ref<string | number | null> {
     case SchemaFieldType.STRING:
       return ref("");
     case SchemaFieldType.DATE:
-      return ref(new Date().toLocaleDateString("es-ES"));
+      return ref(getNewDateString());
     case SchemaFieldType.SELECTION:
       return ref(null);
     default:
@@ -109,7 +123,7 @@ function resetField(field: EntityFieldSchema): string | number | null {
     case SchemaFieldType.STRING:
       return "";
     case SchemaFieldType.DATE:
-      return new Date().toLocaleDateString("es-ES");
+      return getNewDateString();
     case SchemaFieldType.SELECTION:
       return null;
     default:

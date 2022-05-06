@@ -1,14 +1,4 @@
 import {storeFactory} from "src/store/Factory/StoreFactory";
+import {ServicioEntity} from "src/entities/ServicioEntity";
 
-export interface Servicio {
-  codigo: number,
-  descripcion: string,
-  cantidad: number,
-  impuesto: number,
-  costeUnitario: number,
-  costeTotal: number,
-  precioVenta: number,
-  fechaIngreso: string
-}
-
-export const useServiciosStore = storeFactory<Servicio>('servicios');
+export const useServiciosStore = storeFactory<ServicioEntity>('servicios');

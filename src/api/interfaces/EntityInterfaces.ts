@@ -12,4 +12,9 @@ export interface EntityFieldSchema {
   computedOptions?: ComputedField;
   prefix?: string;
   suffix?: string;
+  dialog?: {
+    component: any,
+    onSuccess: Function,
+    onFailure: Function
+  }
 }

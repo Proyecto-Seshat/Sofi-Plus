@@ -20,7 +20,7 @@ const itemsSchema: EntityFieldSchema[] = [
   {
     field: "codigo",
     label: "Codigo",
-    type: SchemaFieldType.NUMBER
+    type: SchemaFieldType.STRING
   },
   {
     field: "cantidad",
@@ -85,6 +85,12 @@ const itemsSchema: EntityFieldSchema[] = [
     label: "Precio de venta",
     responsive: true,
     type: SchemaFieldType.NUMBER
+  },
+  {
+    field: "recurso",
+    label: "Cuenta",
+    responsive: true,
+    type: SchemaFieldType.DIALOG
   },
   {
     field: "fechaIngreso",

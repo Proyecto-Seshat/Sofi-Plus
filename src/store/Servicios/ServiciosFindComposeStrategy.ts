@@ -1,8 +1,8 @@
 import {StoreFindStategy} from "src/store/Factory/StoreFindStategy";
-import {Item} from "src/store/Items/itemsStore";
 import {Ref, UnwrapRef} from "vue";
+import {ServicioEntity} from "src/entities/ServicioEntity";
 
-export class ServiciosFindComposeStrategy implements StoreFindStategy<Item> {
+export class ServiciosFindComposeStrategy implements StoreFindStategy<ServicioEntity> {
 
   filter: Ref<string>;
 
@@ -10,10 +10,9 @@ export class ServiciosFindComposeStrategy implements StoreFindStategy<Item> {
     this.filter = filter;
   }
 
-  find(items: { [p: string]: UnwrapRef<Item> }): Item[] {
-    const codigo = Number(this.filter.value);
+  find(items: { [p: string]: UnwrapRef<ServicioEntity> }): ServicioEntity[] {
     return Object.values(items).filter((item) => {
-      return item.codigo === codigo || item.descripcion.toUpperCase().startsWith(this.filter.value.toUpperCase());
+      return item.codigo.toUpperCase().startsWith(this.filter.value.toUpperCase()) || item.descripcion.toUpperCase().startsWith(this.filter.value.toUpperCase());
     });
   }
 

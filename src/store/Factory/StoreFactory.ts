@@ -3,7 +3,7 @@ import {UnwrapRef} from "vue";
 import {StoreFindStategy} from "src/store/Factory/StoreFindStategy";
 
 export interface CodedEntity {
-  codigo: number
+  codigo: string
 }
 
 export interface StandardFactory<T> {
@@ -20,7 +20,7 @@ export const storeFactory = function <T extends CodedEntity>(storeID: string) {
       let items: { [key: string]: T } = {};
       return {
         items: items,
-        codigo: 0
+        codigo: ""
       }
     },
     getters: {
@@ -37,7 +37,6 @@ export const storeFactory = function <T extends CodedEntity>(storeID: string) {
     actions: {
       add(item: T) {
         this.items[item.codigo] = item as UnwrapRef<T>;
-        this.codigo = this.codigo + 1;
       },
       remove(item: T) {
         delete this.items[item.codigo];
