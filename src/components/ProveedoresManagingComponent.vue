@@ -1,34 +1,29 @@
 <template>
-  <entity-managing-component :entity-schema="proveedoresSchema" :data="proveedoresData" entity="proveedor"/>
+  <entity-managing-component :entity-schema="proveedoresSchema" :data="array" entity="proveedor" :store="store"/>
 </template>
 
 <script lang="ts" setup>
-import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
-import {reactive} from "vue";
 import EntityManagingComponent from "components/EntityManagingComponent.vue";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
+import {storeToRefs} from "pinia";
+import {useProveedoresStore} from "src/store/Proveedores/proveedoresStore";
+import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 
-const proveedoresSchema: ResponsiveTableSchemaField[] = [
+const proveedoresSchema: EntityFieldSchema[] = [
   {
     field: "nombre",
     label: "Nombre",
     type: SchemaFieldType.STRING
   },
   {
-    field: "nit",
+    field: "proveedorID",
     label: "Nit/CC",
     responsive: true,
     type: SchemaFieldType.STRING
   },
   {
-    field: "tipo",
-    label: "Tipo",
-    responsive: true,
-    type: SchemaFieldType.STRING
-  },
-  {
     field: "telefono",
-    label: "Telefono",
+    label: "Teléfono",
     responsive: true,
     type: SchemaFieldType.STRING
   },
@@ -39,15 +34,10 @@ const proveedoresSchema: ResponsiveTableSchemaField[] = [
     type: SchemaFieldType.STRING
   }
 ];
-const proveedoresData = reactive([
-  {
-    nombre: "Pollos la clarita",
-    nit: "1122408617",
-    tipo: "Empresa",
-    telefono: "314502365",
-    observaciones: "La polleria de al lado"
-  }
-]);
+
+const store = useProveedoresStore();
+
+const {array} = storeToRefs(store);
 </script>
 
 <style lang="scss" scoped>

@@ -5,17 +5,17 @@
       <thead class="bg-subs">
       <tr>
         <th v-for="col in schema" :key="`table-${col.field}`" class="text-left">{{ col.label }}</th>
-        <th style="{max-width: 100%; white-space: nowrap}"></th>
+        <th></th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(item, itemIndex) in data" :key="`table-item-${itemIndex}`">
-        <td v-for="col in schema" :key="`table-item-${itemIndex}-${col.field}`" class="text-left">
+        <td v-for="col in schema" :key="`table-item-${itemIndex}-${col.field}`" class="text-left" style="white-space: normal">
           {{ col.prefix ? col.prefix : "" }}{{
-            col.formatter ? col.formatter(item[col.field]) : item[col.field]
-          }}{{ col.suffix ? col.suffix : "" }}
+              col.formatter ? col.formatter(item[col.field]) : item[col.field]
+            }}{{ col.suffix ? col.suffix : "" }}
         </td>
-        <td class="text-center" style="{max-width: 100%; white-space: nowrap}">
+        <td class="text-center">
           <div class="row q-gutter-x-sm">
             <q-btn v-for="(action, actionIndex) in actions" :class="[action.class? action.class : '', 'col']"
                    :icon="action.icon"
@@ -26,7 +26,7 @@
       </tbody>
     </q-markup-table>
     <div v-else class="column">
-      <p v-if="title" class="bg-subs item-bordered text-center">{{ title }}</p>
+      <span v-if="title" class="bg-subs text-center" style="font-size: x-large">{{ title }}</span>
       <q-virtual-scroll
         ref="virtualListRef"
         :items="data"

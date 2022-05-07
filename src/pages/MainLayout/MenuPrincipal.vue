@@ -2,12 +2,8 @@
   <q-page class="column q-ml-md">
     <q-card flat>
       <q-card-section>
-        <q-btn label="test" @click="test"/>
-        <q-tree
-                :nodes="nodes"
-                node-key="label"
-                v-model:selected="selected"
-        />
+        <q-btn label="Purge" @click="purge" />
+        <q-btn label="Print" @click="print" />
       </q-card-section>
     </q-card>
   </q-page>
@@ -18,21 +14,38 @@
 import {RecursoNode, useRecursoStore} from "src/store/Recursos/recursoStore";
 import {RecursoEntity} from "src/entities/RecursoEntity";
 import {computed, ref} from "vue";
+import {useItemsStore} from "src/store/Items/itemsStore";
+import {useProveedoresStore} from "src/store/Proveedores/proveedoresStore";
+import {useServiciosStore} from "src/store/Servicios/serviciosStore";
 
 const recursoStore = useRecursoStore();
 
+function purge(){
+  useItemsStore().purge();
+  useServiciosStore().purge();
+}
+
+function print(){
+  console.log(useProveedoresStore().items);
+}
+
 function test(){
-  const recursos:RecursoEntity[] = [
-    {idRecurso: "1", cuenta: "Activo"},
-    {idRecurso: "11", cuenta: "Disponible"},
-    {idRecurso: "1105", cuenta: "Caja"},
-    {idRecurso: "1110", cuenta: "Bancos"},
-    {idRecurso: "12", cuenta: "Inversiones"},
-    {idRecurso: "1205", cuenta: "Acciones"}
-  ];
-  recursoStore.setRecursos(recursos);
-  console.log(recursoStore.recursosTree);
-  console.log(nodes);
+  // const recursos:RecursoEntity[] = [
+  //   {idRecurso: "1", cuenta: "Activo"},
+  //   {idRecurso: "11", cuenta: "Disponible"},
+  //   {idRecurso: "1105", cuenta: "Caja"},
+  //   {idRecurso: "1110", cuenta: "Bancos"},
+  //   {idRecurso: "12", cuenta: "Inversiones"},
+  //   {idRecurso: "1205", cuenta: "Acciones"},
+  //   {idRecurso: "2", cuenta: "Pasivo"},
+  //   {idRecurso: "21", cuenta: "Obligaciones financieras"},
+  //   {idRecurso: "2105", cuenta: "Bancos nacionales"},
+  //   {idRecurso: "22", cuenta: "Proveedores"},
+  //   {idRecurso: "2215", cuenta: "Cuentas corrientes comerciales"}
+  // ];
+  // recursoStore.setRecursos(recursos);
+  // console.log(recursoStore.recursosTree);
+  // console.log(nodes);
 }
 
 const selected = ref("");
@@ -64,6 +77,14 @@ const nodes = computed(()=>{
 
 .titulo-pagina {
   font-size: 4vh;
+}
+
+.recursoHeader:hover{
+  background: #9C27B0;
+}
+
+.recursoHeader{
+  background: #2C5697;
 }
 
 .comprobante {

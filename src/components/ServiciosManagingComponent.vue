@@ -3,18 +3,18 @@
 </template>
 
 <script lang="ts" setup>
-import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
-import {reactive} from "vue";
 import EntityManagingComponent from "components/EntityManagingComponent.vue";
 import {useServiciosStore} from "src/store/Servicios/serviciosStore";
 import {storeToRefs} from "pinia";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
+import RecursoModalSelector from "components/RecursoModalSelector.vue";
+import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 
-const serviciosSchema: ResponsiveTableSchemaField[] = [
+const serviciosSchema: EntityFieldSchema[] = [
   {
     field: "codigo",
     label: "Codigo",
-    type: SchemaFieldType.NUMBER
+    type: SchemaFieldType.STRING
   },
   {
     field: "descripcion",
@@ -23,8 +23,15 @@ const serviciosSchema: ResponsiveTableSchemaField[] = [
     type: SchemaFieldType.STRING
   },
   {
-    field: "costo",
-    label: "Costo",
+    field: "impuesto",
+    label: "Impuesto",
+    responsive: true,
+    type: SchemaFieldType.NUMBER,
+    prefix: "%"
+  },
+  {
+    field: "costeUnitario",
+    label: "Coste Unitario",
     responsive: true,
     type: SchemaFieldType.NUMBER
   },
@@ -33,16 +40,29 @@ const serviciosSchema: ResponsiveTableSchemaField[] = [
     label: "Precio de venta",
     responsive: true,
     type: SchemaFieldType.NUMBER
+  },
+  {
+    field: "recurso",
+    label: "Cuenta",
+    responsive: true,
+    type: SchemaFieldType.DIALOG,
+    dialog: {
+      component: RecursoModalSelector,
+      onSuccess: (payload: any) => {
+        return payload;
+      },
+      onFailure: () => {
+        console.log("Fallo la seleccion");
+      }
+    }
+  },
+  {
+    field: "fechaCreacion",
+    label: "Fecha de creación",
+    responsive: true,
+    type: SchemaFieldType.DATE
   }
 ];
-const articulosData = reactive([
-  {
-    codigo: "123456",
-    descripcion: "PC",
-    costo: "123456",
-    precioVenta: "123456"
-  }
-]);
 
 const store = useServiciosStore();
 

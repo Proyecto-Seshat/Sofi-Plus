@@ -3,10 +3,10 @@
     <responsive-table :actions="[
       {icon: 'edit_note', onClick: editAction, class: 'advance-btn'},
       {icon: 'delete', onClick: deleteAction, class: 'revert-btn'}
-    ]" :data="data" :schema="entitySchema">
+    ]" :data="data" :schema="tableSchema">
     </responsive-table>
     <presentador v-if="newFlag || editFlag !== -1" :break="3">
-      <template v-for="field in entitySchema">
+      <template v-for="(field, i) in entitySchema">
         <q-input v-if="field.type === SchemaFieldType.STRING" v-model="holders[field.field].value" :label="field.label"
                  type="text" v-bind:suffix="field.suffix? field.suffix : undefined"
                  v-bind:prefix="field.prefix? field.prefix : undefined"/>
@@ -32,19 +32,12 @@
         <q-select v-else-if="field.type === SchemaFieldType.SELECTION" v-model="holders[field.field].value"
                   :label="field.label"
                   :options="field.computedOptions? computedOptions[field.field].value : field.options"/>
-        <q-field v-else-if="field.type === SchemaFieldType.DIALOG" :label="field.label"
-                 v-bind:suffix="field.suffix? field.suffix : undefined"
-                 v-bind:prefix="field.prefix? field.prefix : undefined"
-                 @click="()=>{
+        <q-input v-else-if="field.type === SchemaFieldType.DIALOG" :label="field.label"
+                 v-model="holders[field.field].value" readonly @click="()=>{
                    $q.dialog({
                       component: field.dialog.component,
                     }).onOk(payload => {holders[field.field].value = field.dialog.onSuccess(payload)}).onCancel(field.dialog.onFailure());
-                 }"
-        >
-          <template v-slot:control>
-            <div class="self-center full-width no-outline" tabindex="0">{{ holders[field.field].value }}</div>
-          </template>
-        </q-field>
+                 }"/>
       </template>
     </presentador>
     <helpable-btn v-if="!newFlag && editFlag===-1" help-key="terceros">
@@ -65,6 +58,7 @@
 
 <script lang="ts" setup>
 import {
+  computed,
   defineProps,
   onMounted,
   onUnmounted,
@@ -76,7 +70,7 @@ import {
 } from "vue";
 import Presentador from "components/Presentador.vue";
 import ResponsiveTable from "components/ResponsiveTable.vue";
-import {useQuasar} from "quasar";
+import {QField, useQuasar} from "quasar";
 import ModalCancelar from "components/ModalCancelar.vue";
 import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 import {StandardFactory} from "src/store/Factory/StoreFactory";
@@ -92,6 +86,16 @@ const props = defineProps<{
   data: any[],
   store: StandardFactory<any>
 }>();
+
+const tableSchema = computed(() => {
+  return props.entitySchema.filter((col) => {
+    if (col.showInTable === undefined) {
+      return true;
+    } else {
+      return col.showInTable;
+    }
+  });
+})
 
 function setField(field: EntityFieldSchema): Ref<string | number | null> {
   switch (field.type) {
@@ -206,6 +210,7 @@ function saveAction() {
   props.entitySchema.forEach(field => {
     newEntity[field.field] = holders[field.field].value;
   });
+  console.log(newEntity);
   props.store.add(newEntity);
   for (let field of props.entitySchema) {
     holders[field.field].value = resetField(field);

@@ -1,34 +1,29 @@
 <template>
-  <entity-managing-component :data="clienteData" :entity-schema="clientesSchema" entity="cliente"/>
+  <entity-managing-component :data="array" :entity-schema="clientesSchema" entity="cliente" :store="store"/>
 </template>
 
 <script lang="ts" setup>
-import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInterfaces";
-import {reactive} from "vue";
 import EntityManagingComponent from "components/EntityManagingComponent.vue";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
+import {storeToRefs} from "pinia";
+import {useClientesStore} from "src/store/Clientes/clientesStore";
+import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 
-const clientesSchema: ResponsiveTableSchemaField[] = [
+const clientesSchema: EntityFieldSchema[] = [
   {
     field: "nombre",
     label: "Nombre",
     type: SchemaFieldType.STRING
   },
   {
-    field: "nit",
+    field: "clienteID",
     label: "Nit/CC",
     responsive: true,
     type: SchemaFieldType.STRING
   },
   {
-    field: "tipo",
-    label: "Tipo",
-    responsive: true,
-    type: SchemaFieldType.STRING
-  },
-  {
     field: "telefono",
-    label: "Telefono",
+    label: "Teléfono",
     responsive: true,
     type: SchemaFieldType.STRING
   },
@@ -39,15 +34,11 @@ const clientesSchema: ResponsiveTableSchemaField[] = [
     type: SchemaFieldType.STRING
   }
 ];
-const clienteData = reactive([
-  {
-    nombre: "César Bustacara",
-    nit: "1122408617",
-    tipo: "Persona",
-    telefono: "314502365",
-    observaciones: "Apasionado por los Xbox"
-  }
-]);
+
+const store = useClientesStore();
+
+const {array} = storeToRefs(store);
+
 </script>
 
 <style lang="scss" scoped>

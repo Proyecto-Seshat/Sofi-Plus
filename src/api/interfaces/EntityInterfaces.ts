@@ -16,5 +16,6 @@ export interface EntityFieldSchema {
     component: any,
     onSuccess: Function,
     onFailure: Function
-  }
+  },
+  showInTable?: boolean
 }

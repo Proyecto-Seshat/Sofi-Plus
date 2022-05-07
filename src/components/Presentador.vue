@@ -76,7 +76,6 @@ function unwrapSlot(slot: VNode) {
 
 function resolveActions(actions: VNode[] | null) {
   if (actions) {
-    console.log(actions);
     let resolvedActions: VNode[] = actions.map((action, index, arr) => {
       action.props = mergeProps(action.props!, {
         class: ["col"]
@@ -128,7 +127,7 @@ function resolvePresentador(slot: VNode[], actions: VNode[] | null) {
 }
 
 const render = () => {
-  const itemBreak = props.break? props.break : 4;
+  const itemBreak = props.break ? props.break : 4;
   if (useQuasar().platform.is.desktop) {
     const slot = slots.default!();
     let actions = null;
@@ -147,12 +146,25 @@ const render = () => {
       return h('div', children);
     } else {
       let slotChildren = (slot[0].children as VNode[]);
-      for (let i = 0; i < slotChildren.length; i = i + itemBreak) {
-        if (i + itemBreak > slotChildren.length) {
-          children.push(resolvePresentador(slotChildren.slice(i, i + itemBreak), actions));
-        } else {
-          children.push(resolvePresentador(slotChildren.slice(i, i + itemBreak), null));
+      if (slotChildren) {
+        for (let i = 0; i < slotChildren.length; i = i + itemBreak) {
+          if (i + itemBreak > slotChildren.length) {
+            children.push(resolvePresentador(slotChildren.slice(i, i + itemBreak), actions));
+          } else {
+            children.push(resolvePresentador(slotChildren.slice(i, i + itemBreak), null));
+          }
         }
+      } else {
+        const unwrappedSlot = unwrapSlot(slot[0]);
+        return h("div", [
+          h('div', {class: "row shadow-1 presentador-mobile-top"}, h('span', {class: "col q-pa-sm"}, unwrappedSlot.label)),
+          h('div', {class: ["column", "presentador-mobile-bottom", "shadow-2"]},
+            [
+              h('div', {class: "row items-center"}, h('span', {class: "col q-pa-sm"}, unwrappedSlot.slot)),
+              resolveActions(actions)
+            ]
+          )
+        ]);
       }
       return h('div', children);
     }

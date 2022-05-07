@@ -8,32 +8,54 @@
           <span class="comprobante">Comprobante #123456</span>
         </div>
         <br>
+        <presentador-unitario>
+          <q-input label="Fecha" v-model="newEgreso.fecha">
+            <template v-slot:append>
+              <q-icon class="cursor-pointer" name="event">
+                <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
+                  <q-date v-model="newEgreso.fecha" mask="DD/MM/YYYY">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup color="primary" flat label="Close"/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </presentador-unitario>
+        <br>
         <presentador>
-          <q-input label="Fecha"></q-input>
+          <q-input label="Cantidad" v-model="newEgreso.cantidad"></q-input>
+          <q-input label="Suma en letras" v-model="newEgreso.cantidadEnLetras"></q-input>
+          <q-input label="Por concepto de" v-model="newEgreso.porConceptoDe"></q-input>
         </presentador>
         <br>
         <presentador>
-          <q-input label="Cantidad"></q-input>
-          <q-input label="Suma en letras"></q-input>
-          <q-input label="Por concepto de"></q-input>
+          <q-btn class="full-width"
+                 :label="newEgreso.clienteID!==''? `Nit/CC: ${newEgreso.clienteID}` : `Recibido de`"
+                 @click="()=>{
+                   $q.dialog({
+                      component: TercerosModalSelector,
+                    }).onOk(payload => {newEgreso.clienteID = payload});
+                 }"
+          />
+          <q-input label="Recibido de" v-model="newEgreso.recibidoDe"></q-input>
         </presentador>
         <br>
-        <presentador>
-          <q-input label="Recibido de"></q-input>
-          <q-input label="Nit/CC"></q-input>
-        </presentador>
-        <br>
-        <presentador>
-          <q-select label="Cuenta P.U.C. *" :options="[{
-            label: 'C x pagar 123456'
-          }]" />
-          <span v-bind="{label: 'Debito'}">2345</span>
-          <span v-bind="{label: 'Credito'}">1234</span>
-        </presentador>
+        <presentador-unitario>
+          <q-btn class="full-width"
+                 :label="newEgreso.cuenta!==''? `Cuenta: ${newEgreso.cuenta}` : `Seleccionar cuenta`"
+                 @click="()=>{
+                   $q.dialog({
+                      component: RecursoModalSelector,
+                    }).onOk(payload => {newEgreso.cuenta = payload});
+                 }"
+          />
+        </presentador-unitario>
         <br>
         <presentador>
           <helpable-btn help-key="egreso:elaborado">
-            <q-input label="Elaborado por">
+            <q-input label="Elaborado por" v-model="newEgreso.elaboradoPor">
               <template v-slot:append>
                 <q-icon name="info">
                   <q-tooltip class="text-body2">
@@ -43,7 +65,7 @@
               </template>
             </q-input>
           </helpable-btn>
-          <q-input label="Aprobado por"></q-input>
+          <q-input label="Aprobado por" v-model="newEgreso.aprobadoPor"></q-input>
         </presentador>
         <br>
         <button-group :btns="[
@@ -65,330 +87,35 @@
             },
             {
               label: 'Guardar',
-              fn: ()=>{
-                $q.notify('Sirve');
-              }
+              fn: save
             }
             ]"/>
-        <q-dialog v-model="modal">
-          <q-card>
-            <q-card-section>
-              <q-input class="col" label="Nombre"/>
-              <q-input class="col" label="Codigo"/>
-              <q-btn label="Seleccinar"/>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
       </q-card-section>
     </q-card>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from 'vue';
+import {Ref, ref} from 'vue';
 import Presentador from "components/Presentador.vue";
 import ButtonGroup from "components/ButtonGroup.vue";
 import ModalCancelar from "components/ModalCancelar.vue";
 import HelpableBtn from "components/Helpables/HelpableBtn.vue";
+import PresentadorUnitario from "components/PresentadorUnitario.vue";
+import {ComprobanteEgresoEntity} from "src/entities/ComprobanteEgresoEntity";
+import RecursoModalSelector from "components/RecursoModalSelector.vue";
+import TercerosModalSelector from "components/TercerosModalSelector.vue";
+import {useQuasar} from "quasar";
 
-const step = ref(1);
-const date = ref("");
-const descuento = ref(0);
-const modal = ref(false);
+const $q = useQuasar();
+
 const stickyHeight = ref(0);
+const newEgreso: Ref<ComprobanteEgresoEntity> = ref(new ComprobanteEgresoEntity({}));
 
-const columns = [
-  {
-    name: 'item',
-    required: true,
-    label: 'Item',
-    align: 'left',
-    field: 'item',
-  },
-  {name: 'codigo', align: 'center', label: 'Codigo', field: 'codigo', sortable: true},
-  {name: 'precio', label: 'Precio', field: 'precio', sortable: true},
-  {name: 'descuento', label: 'Descuento', field: 'descuento'},
-  {name: 'impuesto', label: 'Impuesto', field: 'impuesto'},
-  {name: 'cantidad', label: 'Cantidad', field: 'cantidad'},
-  {name: 'total', label: 'Total', field: 'total'}
-]
-
-const rows = reactive([
-  {
-    item: 'Caja de galletas la rosa',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Bon ice extremo',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Jabon de tierra',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Coca cola zero',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  },
-  {
-    item: 'Papas margarita',
-    codigo: "3456465785",
-    precio: 3400,
-    descuento: 0,
-    impuesto: 19,
-    cantidad: 4,
-    total: 12300
-  }
-
-]);
-
-const esquema = [
-  {
-    field: "item",
-    label: "Item"
-  },
-  {
-    field: "codigo",
-    label: "Codigo"
-  },
-  {
-    field: "precio",
-    label: "Precio",
-    responsive: true
-  },
-  {
-    field: "descuento",
-    label: "Descuento"
-  },
-  {
-    field: "impuesto",
-    label: "Impuesto"
-  },
-  {
-    field: "cantidad",
-    label: "Cantidad",
-    responsive: true
-  },
-  {
-    field: "total",
-    label: "Total"
-  }
-]
-
-const totalVisible = ref(true);
-
-function onTotalOculto(entry: any) {
-  totalVisible.value = entry.isIntersecting;
+function save(){
+  console.log(newEgreso.value);
 }
+
 </script>
 <style lang="scss" scoped>
 .total {

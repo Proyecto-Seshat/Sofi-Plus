@@ -13,18 +13,17 @@
         align="justify"
         narrow-indicator
       >
-        <q-tab name="items" label="Items"/>
-        <q-tab name="servicios" label="Servicios"/>
+        <q-tab name="clientes" label="Clientes"/>
+        <q-tab name="proveedores" label="Proveedores"/>
       </q-tabs>
 
       <q-separator/>
 
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="items">
+        <q-tab-panel name="clientes">
           <q-item class="q-pa-none">
             <q-item-section>
-              <q-input v-model="filter" autofocus class="col" label="Código o descripción"
-                       @update:model-value="search"/>
+              <q-input v-model="filter" autofocus class="col" label="Nit/CC o Nombre" @update:model-value="search"/>
             </q-item-section>
             <q-item-section side>
               <q-btn icon="search" round @click="search"/>
@@ -39,26 +38,25 @@
             <template v-slot:before>
               <thead class="thead-sticky text-left">
               <tr>
-                <th>Código</th>
-                <th>Descripción</th>
+                <th>Nit/CC</th>
+                <th>Nombre</th>
               </tr>
               </thead>
             </template>
 
             <template v-slot="{ item, index }">
               <tr :key="index" @click="select(item)">
-                <td>{{ item.codigo }}</td>
-                <td>{{ item.descripcion }}</td>
+                <td>{{ item.clienteID }}</td>
+                <td>{{ item.nombre }}</td>
               </tr>
             </template>
           </q-virtual-scroll>
         </q-tab-panel>
 
-        <q-tab-panel name="servicios">
+        <q-tab-panel name="proveedores">
           <q-item class="q-pa-none">
             <q-item-section>
-              <q-input v-model="filter" autofocus class="col" label="Código o descripción"
-                       @update:model-value="search"/>
+              <q-input v-model="filter" autofocus class="col" label="Nit/CC o Nombre" @update:model-value="search"/>
             </q-item-section>
             <q-item-section side>
               <q-btn icon="search" round @click="search"/>
@@ -73,16 +71,16 @@
             <template v-slot:before>
               <thead class="thead-sticky text-left">
               <tr>
-                <th>Código</th>
-                <th>Descripción</th>
+                <th>Nit/CC</th>
+                <th>Nombre</th>
               </tr>
               </thead>
             </template>
 
             <template v-slot="{ item, index }">
               <tr :key="index" @click="select(item)">
-                <td>{{ item.codigo }}</td>
-                <td>{{ item.descripcion }}</td>
+                <td>{{ item.proveedorID }}</td>
+                <td>{{ item.nombre }}</td>
               </tr>
             </template>
           </q-virtual-scroll>
@@ -102,12 +100,6 @@ import {ClienteEntity} from "src/entities/ClienteEntity";
 import {ProveedorEntity} from "src/entities/ProveedorEntity";
 import {ClientesFindStrategy} from "src/store/Clientes/ClientesFindStrategy";
 import {ProveedoresFindComposeStrategy} from "src/store/Proveedores/proveedoresFindComposeStrategy";
-import {useItemsStore} from "src/store/Items/itemsStore";
-import {useServiciosStore} from "src/store/Servicios/serviciosStore";
-import {ItemsFindComposeStrategy} from "src/store/Items/ItemsFindComposeStrategy";
-import {ServiciosFindComposeStrategy} from "src/store/Servicios/ServiciosFindComposeStrategy";
-import {ItemEntity} from "src/entities/ItemEntity";
-import {ServicioEntity} from "src/entities/ServicioEntity";
 import {usePreferencesStore} from "src/store/preferencesStore";
 
 const props = defineProps();
@@ -119,30 +111,30 @@ const {onDialogOK, onDialogHide, onDialogCancel, dialogRef} = useDialogPluginCom
 const preferedStore = usePreferencesStore();
 
 function updatePrefered(path: string){
-  console.log(path);
-  preferedStore.setPreferedInventario(path);
+  preferedStore.setPreferedTerceros(path);
 }
 
-const tab = ref(preferedStore.preferedInventario);
-const itemsStore = useItemsStore();
-const serviciosStore = useServiciosStore();
+const tab = ref(preferedStore.preferedTerceros);
+
+const clienteStore = useClientesStore();
+const proveedorStore = useProveedoresStore();
 const filter = ref("");
-const itemsSearcher = new ItemsFindComposeStrategy(filter);
-const serviciosSearcher = new ServiciosFindComposeStrategy(filter);
-const searchData: Ref<ItemEntity[] | ServicioEntity[]> = ref([]);
+const clienteSearcher = new ClientesFindStrategy(filter);
+const proveedorSearcher = new ProveedoresFindComposeStrategy(filter);
+const searchData: Ref<ClienteEntity[] | ProveedorEntity[]> = ref([]);
 
 function search() {
   switch (tab.value) {
-    case "items":
-      searchData.value = itemsStore.find(itemsSearcher);
+    case "clientes":
+      searchData.value = clienteStore.find(clienteSearcher);
       break;
-    case "servicios":
-      searchData.value = serviciosStore.find(serviciosSearcher);
+    case "proveedores":
+      searchData.value = proveedorStore.find(proveedorSearcher);
       break;
   }
 }
 
-function select(item: ItemEntity | ServicioEntity) {
+function select(item: ClienteEntity | ProveedorEntity) {
   onDialogOK(item);
 }
 </script>

@@ -3,18 +3,18 @@ import {UnwrapRef} from "vue";
 import {StoreFindStategy} from "src/store/Factory/StoreFindStategy";
 
 export interface CodedEntity {
-  codigo: string
+  getCode(): string
 }
 
 export interface StandardFactory<T> {
   items: { [key: string]: T },
-  generateCode: number,
+  generateCode: string,
   array: T[],
   add: (item: T) => void,
   remove: (item: T) => void
 }
 
-export const storeFactory = function <T extends CodedEntity>(storeID: string) {
+export const storeFactory = function <T extends CodedEntity>(storeID: string, entity: any) {
   return defineStore(storeID, {
     state: () => {
       let items: { [key: string]: T } = {};
@@ -36,10 +36,29 @@ export const storeFactory = function <T extends CodedEntity>(storeID: string) {
     },
     actions: {
       add(item: T) {
-        this.items[item.codigo] = item as UnwrapRef<T>;
+        const entityItem = new entity(item);
+        this.items[entityItem.getCode()] = entityItem as UnwrapRef<T>;
       },
       remove(item: T) {
-        delete this.items[item.codigo];
+        delete this.items[item.getCode()];
+      },
+      affect(codigo: string, effect: Function){
+        this.items[codigo] = effect(this.items[codigo]);
+      },
+      get(codigo: string){
+        return this.items[codigo];
+      },
+      purge(){
+        this.items = {};
+        // for(let item in this.items){
+        //   console.log(item);
+        //   if(item === undefined){
+        //     delete this.items[item];
+        //   }
+        //   if(!this.items[item]){
+        //     delete this.items[item];
+        //   }
+        // }
       }
     },
     persist: true

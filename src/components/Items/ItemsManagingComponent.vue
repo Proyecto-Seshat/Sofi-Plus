@@ -9,6 +9,7 @@ import {storeToRefs} from "pinia";
 import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 import {MeasureEngine} from "src/api/Items/MeasureEngine";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
+import RecursoModalSelector from "components/RecursoModalSelector.vue";
 
 const itemsSchema: EntityFieldSchema[] = [
   {
@@ -33,7 +34,8 @@ const itemsSchema: EntityFieldSchema[] = [
     label: "Dimension",
     responsive: true,
     type: SchemaFieldType.SELECTION,
-    options: MeasureEngine.instance().getDimensionsNames()
+    options: MeasureEngine.instance().getDimensionsNames(),
+    showInTable: false
   },
   {
     field: "unidadPreferida",
@@ -49,7 +51,8 @@ const itemsSchema: EntityFieldSchema[] = [
           return [''];
         }
       }
-    }
+    },
+    showInTable: false
   },
   {
     field: "impuesto",
@@ -78,7 +81,8 @@ const itemsSchema: EntityFieldSchema[] = [
           return 0;
         }
       }
-    }
+    },
+    showInTable: false
   },
   {
     field: "precioVenta",
@@ -90,13 +94,23 @@ const itemsSchema: EntityFieldSchema[] = [
     field: "recurso",
     label: "Cuenta",
     responsive: true,
-    type: SchemaFieldType.DIALOG
+    type: SchemaFieldType.DIALOG,
+    dialog: {
+      component: RecursoModalSelector,
+      onSuccess: (payload: any) => {
+        return payload;
+      },
+      onFailure: () => {
+        console.log("Fallo la seleccion");
+      }
+    }
   },
   {
     field: "fechaIngreso",
     label: "Fecha de ingreso",
     responsive: true,
-    type: SchemaFieldType.DATE
+    type: SchemaFieldType.DATE,
+    showInTable: false
   }
 ];
 

@@ -1,6 +1,7 @@
 import {getNewDateString} from "src/api/utils/DateFormat";
+import {CodedEntity} from "src/store/Factory/StoreFactory";
 
-export class ServicioEntity {
+export class ServicioEntity implements CodedEntity{
   codigo: string
   descripcion: string
   impuesto: number
@@ -16,4 +17,10 @@ export class ServicioEntity {
     this.precioVenta = precioVenta? precioVenta : 0;
     this.fechaCreacion = fechaCreacion? fechaCreacion : getNewDateString();
   }
+
+  getCode(): string {
+    return this.codigo;
+  }
+
+
 }

@@ -9,15 +9,29 @@ export interface RecursoNode{
 export const useRecursoStore = defineStore("recurso", {
   state: () => {
     return {
-      recursos: [] as RecursoEntity[],
+      recursos: [
+        {idRecurso: "1", cuenta: "Activo"},
+        {idRecurso: "11", cuenta: "Disponible"},
+        {idRecurso: "1105", cuenta: "Caja"},
+        {idRecurso: "1110", cuenta: "Bancos"},
+        {idRecurso: "12", cuenta: "Inversiones"},
+        {idRecurso: "1205", cuenta: "Acciones"},
+        {idRecurso: "2", cuenta: "Pasivo"},
+        {idRecurso: "21", cuenta: "Obligaciones financieras"},
+        {idRecurso: "2105", cuenta: "Bancos nacionales"},
+        {idRecurso: "22", cuenta: "Proveedores"},
+        {idRecurso: "2215", cuenta: "Cuentas corrientes comerciales"}
+      ] as RecursoEntity[],
       recursosTree: {} as {[key: string]: RecursoNode}
     };
   },
   getters: {
+
   },
   actions: {
     setRecursos(recursos: RecursoEntity[]) {
-      recursos.forEach((recurso)=>{
+      this.recursos = recursos;
+      this.recursos.forEach((recurso)=>{
         let clase = recurso.idRecurso.substring(0, 1);
         if(recurso.idRecurso.length == 1){
           this.recursosTree[clase] = {

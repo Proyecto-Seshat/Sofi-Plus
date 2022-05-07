@@ -1,38 +1,18 @@
 <template>
-  <q-dialog ref="dialogRef" @hide="onDialogHide">
-    <q-card>
+  <q-dialog ref="dialogRef">
+    <q-card :class="{
+      'mobile-modal-selector': $q.platform.is.mobile
+    }">
       <q-card-section>
-        <q-item>
-          <q-item-section>
-            <q-input v-model="filter" autofocus class="col" label="Nombre o codigo" @update:model-value="search"/>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn icon="search" round @click="search"/>
-          </q-item-section>
-        </q-item>
+        <q-tree
+          :nodes="nodes"
+          node-key="value"
+          v-model:selected="selected"
+          selected-color="red"
+        />
       </q-card-section>
       <q-card-section>
-        <q-virtual-scroll
-          :items="searchData"
-          style="max-height: 30vh; min-height: 10vh;"
-          type="table"
-        >
-          <template v-slot:before>
-            <thead class="thead-sticky text-left">
-            <tr>
-              <th>Codigo</th>
-              <th>Descripción</th>
-            </tr>
-            </thead>
-          </template>
-
-          <template v-slot="{ item, index }">
-            <tr :key="index" @click="select(item)">
-              <td>{{ item.codigo }}</td>
-              <td>{{ item.descripcion }}</td>
-            </tr>
-          </template>
-        </q-virtual-scroll>
+        <q-btn label="Seleccionar" class="full-width" @click="select" />
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -40,9 +20,9 @@
 
 <script lang="ts" setup>
 
-import {ref} from "vue";
-import {useItemsStore} from "src/store/Items/itemsStore";
+import {computed, ref} from "vue";
 import {useDialogPluginComponent} from 'quasar';
+import {RecursoNode, useRecursoStore} from "src/store/Recursos/recursoStore";
 
 const props = defineProps();
 defineEmits([
@@ -50,17 +30,31 @@ defineEmits([
 ]);
 const {onDialogOK, onDialogHide, onDialogCancel, dialogRef} = useDialogPluginComponent();
 
-const itemsStore = useItemsStore();
-let searchData = ref<Item[]>([]);
-const filter = ref("");
-const searcher = new ItemsFindComposeStrategy(filter);
+const recursoStore = useRecursoStore();
+const selected = ref("");
 
-function search() {
-  searchData.value = itemsStore.find(searcher);
+const recursion: any = (node: RecursoNode) => {
+  if (!node.children) {
+    return {label: `${node.recurso.idRecurso}: ${node.recurso.cuenta}`, value: node.recurso.idRecurso}
+  } else {
+    return {
+      label: `${node.recurso.idRecurso}: ${node.recurso.cuenta}`,
+      children: Object.values(node.children).map(recursion),
+      value: node.recurso.idRecurso
+    }
+  }
 }
 
-function select(articulo: Item) {
-  onDialogOK(articulo);
+const nodes = computed(() => {
+  let res = [];
+  for (let clase of Object.values(recursoStore.recursosTree)) {
+    res.push(recursion(clase));
+  }
+  return res;
+});
+
+function select() {
+  onDialogOK(selected.value);
 }
 </script>
 
@@ -78,4 +72,7 @@ function select(articulo: Item) {
 
 .tfoot-sticky tr:first-child > *
   bottom: 0
+.mobile-modal-selector
+  min-width: 90%
+  min-height: 90%
 </style>

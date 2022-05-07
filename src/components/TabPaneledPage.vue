@@ -12,8 +12,12 @@
 
   <q-separator/>
 
-  <q-tab-panels v-model="currentTab" animated>
-    <q-tab-panel v-for="tab in normalizedTabs" :name="tab">
+  <q-tab-panels v-model="currentTab" animated :class="{
+    'q-pa-none': $q.platform.is.mobile
+  }">
+    <q-tab-panel v-for="tab in normalizedTabs" :name="tab" :class="{
+    'q-pa-none': $q.platform.is.mobile
+  }">
       <slot :name="tab"></slot>
     </q-tab-panel>
   </q-tab-panels>
