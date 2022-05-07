@@ -96,17 +96,11 @@
                   $q.notify('Cancelado');
                 });
               },
-              class: 'revert-btn',
-              weight: 4
-            },
-            {
-              label: 'Documento para impresión',
-              fn: printFactura
+              class: 'revert-btn shadow-10'
             },
             {
               label: 'Guardar',
-              fn: saveFactura,
-              weight: 5
+              fn: saveFactura
             }
             ]"/>
     </q-card-section>

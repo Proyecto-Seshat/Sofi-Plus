@@ -46,10 +46,10 @@
                 </q-item-section>
               </q-item>
             </q-list>
-            <div class="row q-gutter-x-sm">
+            <div class="row q-gutter-x-xs q-ma-xs">
               <q-btn v-for="(action, actionIndex) in actions" :class="[action.class? action.class : '', 'col']"
                      :icon="action.icon"
-                     :label]="action.label" v-bind="action.class? {} : {outline: true}"
+                     :label="action.label" v-bind="action.class? {} : {outline: true}"
                      @click="action.onClick(item, index)"/>
             </div>
           </q-expansion-item>

@@ -2,7 +2,7 @@
   <div class="column justify-start q-gutter-y-sm">
     <responsive-table :actions="[
       {icon: 'edit_note', onClick: editAction, class: 'advance-btn'},
-      {icon: 'delete', onClick: deleteAction, class: 'revert-btn'}
+      {icon: 'delete', onClick: deleteAction, class: 'revert-btn shadow-10'}
     ]" :data="data" :schema="tableSchema">
     </responsive-table>
     <presentador v-if="newFlag || editFlag !== -1" :break="3">
@@ -43,14 +43,14 @@
     <helpable-btn v-if="!newFlag && editFlag===-1" help-key="terceros">
       <q-btn :label="`Agregar ${entity}`" class="advance-btn" @click="addAction"/>
     </helpable-btn>
-    <div v-else-if="newFlag" class="row q-gutter-x-sm">
-      <q-btn class="col revert-btn" label="Cancelar" @click="cancelAction"/>
+    <div v-else-if="newFlag" class="row q-gutter-x-xs q-ma-xs">
+      <q-btn class="col revert-btn shadow-10" label="Cancelar" @click="cancelAction"/>
       <helpable-btn help-key="nit/cc">
         <q-btn :label="`Guardar ${entity}`" class="col advance-btn text-no-wrap" @click="saveAction"/>
       </helpable-btn>
     </div>
-    <div v-else-if="editFlag!==-1" class="row q-gutter-x-sm">
-      <q-btn class="col revert-btn" label="Cancelar" @click="cancelAction"/>
+    <div v-else-if="editFlag!==-1" class="row q-gutter-x-xs q-ma-xs">
+      <q-btn class="col revert-btn shadow-10" label="Cancelar" @click="cancelAction"/>
       <q-btn :label="`Editar ${entity}`" class="col advance-btn text-no-wrap" @click="editSaveAction"/>
     </div>
   </div>
