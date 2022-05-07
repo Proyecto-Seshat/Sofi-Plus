@@ -105,6 +105,7 @@ export const useRecursoStore = defineStore("recurso", {
           }
         });
       }
+      return state.recursosTree;
     }
   },
   actions: {

@@ -47,7 +47,7 @@ const recursion: any = (node: RecursoNode) => {
 
 const nodes = computed(() => {
   let res = [];
-  for (let clase of Object.values(recursoStore.recursosTree)) {
+  for (let clase of Object.values(recursoStore.getTree)) {
     res.push(recursion(clase));
   }
   return res;

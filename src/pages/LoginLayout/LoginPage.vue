@@ -4,7 +4,7 @@
       <p style="color: #1D1D1D" class="col-auto login-input">¡Inicia sesión para tener acceso a tu contabilidad!</p>
       <div class="col-auto column q-gutter-y-md login-input">
         <q-input label="Usuario" v-model="username" class="col-auto"></q-input>
-        <q-input label="Contraseña" v-model="pass" class="col-auto"></q-input>
+        <q-input label="Contraseña" v-model="pass" class="col-auto" type="password"></q-input>
         <q-btn label="Iniciar Sesión" class="col-auto advance-btn" @click="login"/>
       </div>
       <br>

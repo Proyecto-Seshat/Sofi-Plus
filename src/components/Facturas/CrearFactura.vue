@@ -253,18 +253,7 @@ function sell() {
     cantidad: cantidad.value,
     total: total
   });
-  selectedItem.value = {
-    descripcion: "",
-    codigo: "",
-    cantidad: 0,
-    dimension: "",
-    unidadPreferida: "",
-    costeTotal: 0,
-    costeUnitario: 0,
-    fechaIngreso: "",
-    impuesto: 0,
-    precioVenta: 0
-  };
+  selectedItem.value = new ItemEntity({});
   cantidad.value = 0;
   descuento.value = 0;
 }
@@ -287,18 +276,7 @@ const nombre: Ref<string> = ref('');
 
 function resetData() {
   newFactura.value = new FacturaEntity({});
-  selectedItem.value = {
-    descripcion: "",
-    codigo: "",
-    cantidad: 0,
-    dimension: "",
-    unidadPreferida: "",
-    costeTotal: 0,
-    costeUnitario: 0,
-    fechaIngreso: "",
-    impuesto: 0,
-    precioVenta: 0
-  };
+  selectedItem.value = new ItemEntity({});
   cantidad.value = 0;
   descuento.value = 0;
   nombre.value = '';
