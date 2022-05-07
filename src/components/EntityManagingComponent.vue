@@ -40,14 +40,10 @@
                  }"/>
       </template>
     </presentador>
-    <helpable-btn v-if="!newFlag && editFlag===-1" help-key="terceros">
-      <q-btn :label="`Agregar ${entity}`" class="advance-btn" @click="addAction"/>
-    </helpable-btn>
+    <q-btn :label="`Agregar ${entity}`" class="advance-btn" @click="addAction" v-if="!newFlag && editFlag===-1"/>
     <div v-else-if="newFlag" class="row q-gutter-x-xs q-ma-xs">
       <q-btn class="col revert-btn shadow-10" label="Cancelar" @click="cancelAction"/>
-      <helpable-btn help-key="nit/cc">
-        <q-btn :label="`Guardar ${entity}`" class="col advance-btn text-no-wrap" @click="saveAction"/>
-      </helpable-btn>
+      <q-btn :label="`Guardar ${entity}`" class="col advance-btn text-no-wrap" @click="saveAction"/>
     </div>
     <div v-else-if="editFlag!==-1" class="row q-gutter-x-xs q-ma-xs">
       <q-btn class="col revert-btn shadow-10" label="Cancelar" @click="cancelAction"/>

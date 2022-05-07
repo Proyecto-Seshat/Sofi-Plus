@@ -8,7 +8,7 @@
       </div>
       <br>
       <presentador>
-        <helpable-input help-key="">
+        <helpable-input help-key="factura:item">
           <q-input v-model="selectedItem.descripcion" label="Item" readonly @click="selectItem"/>
         </helpable-input>
         <helpable-input help-key="factura:cantidad">
@@ -19,13 +19,17 @@
             </template>
           </q-input>
         </helpable-input>
-        <q-input v-model="descuento" label="Descuento" placeholder="Ingrese descuento">
-          <template v-slot:append>
-            <q-select v-model="descuentoType" :options="['%', '$']"/>
-          </template>
-        </q-input>
+        <helpable-input help-key="factura:descuento">
+          <q-input v-model="descuento" label="Descuento" placeholder="Ingrese descuento">
+            <template v-slot:append>
+              <q-select v-model="descuentoType" :options="['%', '$']"/>
+            </template>
+          </q-input>
+        </helpable-input>
         <template #action>
-          <q-btn class="advance-btn" label="Agregar item" @click="sell"/>
+          <helpable-btn help-key="factura:agregarItem">
+            <q-btn class="advance-btn" label="Agregar item" @click="sell"/>
+          </helpable-btn>
         </template>
       </presentador>
       <br>
@@ -45,38 +49,48 @@
       </div>
       <br>
       <presentador>
-        <q-input v-model="newFactura.fecha" label="Fecha">
-          <template v-slot:append>
-            <q-icon class="cursor-pointer" name="event">
-              <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
-                <q-date v-model="newFactura.fecha" mask="DD/MM/YYYY">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup color="primary" flat label="Close"/>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        <q-input v-model="newFactura.fechaVencimiento" label="Fecha Vencimiento">
-          <template v-slot:append>
-            <q-icon class="cursor-pointer" name="event">
-              <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
-                <q-date v-model="newFactura.fechaVencimiento" mask="DD/MM/YYYY">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup color="primary" flat label="Close"/>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+        <helpable-input help-key="factura:fecha">
+          <q-input v-model="newFactura.fecha" label="Fecha">
+            <template v-slot:append>
+              <q-icon class="cursor-pointer" name="event">
+                <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
+                  <q-date v-model="newFactura.fecha" mask="DD/MM/YYYY">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup color="primary" flat label="Close"/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </helpable-input>
+        <helpable-input help-key="factura:fechaVencimiento">
+          <q-input v-model="newFactura.fechaVencimiento" label="Fecha Vencimiento">
+            <template v-slot:append>
+              <q-icon class="cursor-pointer" name="event">
+                <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
+                  <q-date v-model="newFactura.fechaVencimiento" mask="DD/MM/YYYY">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup color="primary" flat label="Close"/>
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </helpable-input>
       </presentador>
       <br>
       <presentador>
-        <q-input label="Nit/CC" v-model="newFactura.clienteID" readonly @click="selectCliente"/>
-        <q-input label="Nombre" v-model="newFactura.clienteNombre" readonly/>
-        <q-select label="Tipo Pago" v-model="newFactura.tipoPago" :options="['Efectivo', 'Credito']"/>
+        <helpable-input help-key="factura:terceroID">
+          <q-input label="Nit/CC" v-model="newFactura.clienteID" readonly @click="selectCliente"/>
+        </helpable-input>
+        <helpable-input help-key="factura:nombre">
+          <q-input label="Nombre" v-model="newFactura.clienteNombre" readonly/>
+        </helpable-input>
+        <helpable-input help-key="factura:tipoPago">
+          <q-select label="Tipo Pago" v-model="newFactura.tipoPago" :options="['Efectivo', 'Credito']"/>
+        </helpable-input>
       </presentador>
       <br>
       <button-group :btns="[
@@ -107,7 +121,7 @@
   </q-card>
   <q-page-sticky v-if="!totalVisible" expand position="bottom">
       <span
-        class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{presentCurrency(total)}}</b></span>
+        class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{ presentCurrency(total) }}</b></span>
   </q-page-sticky>
 </template>
 
@@ -131,6 +145,7 @@ import TercerosModalSelector from "components/TercerosModalSelector.vue";
 import {ClienteEntity} from "src/entities/ClienteEntity";
 import {ProveedorEntity} from "src/entities/ProveedorEntity";
 import {useFacturaStore} from "src/store/Facturas/facturaStore";
+import HelpableBtn from "components/Helpables/HelpableBtn.vue";
 
 const $q = useQuasar();
 const stickyHeight = ref(0);

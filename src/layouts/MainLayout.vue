@@ -1,5 +1,5 @@
 <template>
-  <q-layout class="overlay" view="hHh lpr fFf">
+  <q-layout class="overlay" view="hHh LpR fFf">
     <q-header class="bg-javeriana" elevated>
       <q-toolbar>
         <q-btn class="q-mr-sm" dense flat icon="menu" round @click="openDrawer"/>
@@ -106,7 +106,6 @@ watch(helpInfo, (value, oldValue) => {
     if ($q.platform.is.desktop) {
       rightDrawerOpen.value = true;
     } else {
-      rightDrawerOpen.value = true;
       $q.notify(value);
     }
   }
