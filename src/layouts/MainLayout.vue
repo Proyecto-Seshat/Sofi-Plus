@@ -9,8 +9,8 @@
         <q-space/>
         <q-item>
           <q-item-section>
-            <q-item-label>{{capitalize(name)}}</q-item-label>
-            <q-item-label caption class="text-white" lines="1">{{capitalize(role)}}</q-item-label>
+            <q-item-label>{{ capitalize(name) }}</q-item-label>
+            <q-item-label caption class="text-white" lines="1">{{ capitalize(role) }}</q-item-label>
           </q-item-section>
           <q-item-section avatar>
             <q-btn round outline>
@@ -39,8 +39,9 @@
         <img alt="escudo" src="/escudo.svg">
       </div>
       <div class="column drawer-overflow">
-        <q-item v-for="(link, index) in getPermissions" :key="link" :to="`/usr=123456/${index}`" active-class="link-activo"
-                class="link-inactivo">
+        <q-item v-for="(link, index) in getPermissions" :key="link" :to="`/usr=123456/${index}`"
+                active-class="link-activo"
+                class="link-inactivo" :disable="!linksHabilitados[link]">
           <q-item-section>
             <q-item-label class="text-right">{{ link }}</q-item-label>
           </q-item-section>
@@ -88,17 +89,23 @@ const $q = useQuasar();
 const store = helpStore();
 const {getPermissions, name, role} = storeToRefs(userStore());
 const {capitalize} = format;
-const router = useRouter();
+const router = useRouter()
+
+const linksHabilitados = {
+  "FACTURA DE  VENTA": true,
+  "INVENTARIO": true,
+  "TERCEROS": true
+};
 
 const helpInfo = computed(() => {
   return store.helpInfo;
 });
 
 watch(helpInfo, (value, oldValue) => {
-  if(value!=""){
-    if($q.platform.is.desktop){
+  if (value != "") {
+    if ($q.platform.is.desktop) {
       rightDrawerOpen.value = true;
-    }else{
+    } else {
       rightDrawerOpen.value = true;
       $q.notify(value);
     }
@@ -113,7 +120,7 @@ function showHelp() {
   store.requestHelp();
 }
 
-function logout(){
+function logout() {
   userStore().logout();
   router.push("/");
 }
