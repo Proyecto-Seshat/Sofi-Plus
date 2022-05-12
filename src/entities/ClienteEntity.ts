@@ -1,12 +1,9 @@
-import {CodedEntity} from "src/store/Factory/StoreFactory";
-
-export class ClienteEntity implements CodedEntity{
+export class ClienteEntity {
   codigo: string;
   nombre: string;
   clienteID: string;
   telefono: string;
   observaciones: string;
-
 
   constructor({
                 nombre,
@@ -21,8 +18,8 @@ export class ClienteEntity implements CodedEntity{
     this.codigo = this.clienteID;
   }
 
-  getCode(): string {
-    return this.clienteID;
+  static getCode(cliente: ClienteEntity): string {
+    return cliente.clienteID;
   }
 
 

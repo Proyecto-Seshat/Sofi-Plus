@@ -2,10 +2,6 @@ import {defineStore} from "pinia";
 import {UnwrapRef} from "vue";
 import {StoreFindStategy} from "src/store/Factory/StoreFindStategy";
 
-export interface CodedEntity {
-  getCode(): string
-}
-
 export interface StandardFactory<T> {
   items: { [key: string]: T },
   generateCode: string,
@@ -14,7 +10,7 @@ export interface StandardFactory<T> {
   remove: (item: T) => void
 }
 
-export const storeFactory = function <T extends CodedEntity>(storeID: string, entity: any) {
+export const storeFactory = function <T>(storeID: string, entity: any) {
   return defineStore(storeID, {
     state: () => {
       let items: { [key: string]: T } = {};
@@ -37,18 +33,18 @@ export const storeFactory = function <T extends CodedEntity>(storeID: string, en
     actions: {
       add(item: T) {
         const entityItem = new entity(item);
-        this.items[entityItem.getCode()] = entityItem as UnwrapRef<T>;
+        this.items[entity.getCode(entityItem)] = entityItem as UnwrapRef<T>;
       },
       remove(item: T) {
-        delete this.items[item.getCode()];
+        delete this.items[entity.getCode(item)];
       },
-      affect(codigo: string, effect: Function){
+      affect(codigo: string, effect: Function) {
         this.items[codigo] = effect(this.items[codigo]);
       },
-      get(codigo: string){
+      get(codigo: string) {
         return this.items[codigo];
       },
-      purge(){
+      purge() {
         this.items = {};
         // for(let item in this.items){
         //   console.log(item);

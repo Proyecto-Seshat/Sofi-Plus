@@ -1,6 +1,4 @@
-import {CodedEntity} from "src/store/Factory/StoreFactory";
-
-export class RecursoEntity implements CodedEntity{
+export class RecursoEntity{
   idRecurso: string;
   cuenta: string;
 
@@ -10,7 +8,7 @@ export class RecursoEntity implements CodedEntity{
     this.cuenta = cuenta? cuenta : "Cuenta Invalida";
   }
 
-  getCode(): string {
-    return this.idRecurso;
+  static getCode(recurso: RecursoEntity): string {
+    return recurso.idRecurso;
   }
 }

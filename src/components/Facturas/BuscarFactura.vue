@@ -48,7 +48,7 @@ import {ResponsiveTableSchemaField} from "src/api/interfaces/ResponsiveTableInte
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
 import {FacturaEntity} from "src/entities/FacturaEntity";
 import {useFacturaStore} from "src/store/Facturas/facturaStore";
-import TercerosModalSelector from "components/TercerosModalSelector.vue";
+import TercerosModalSelector from "components/Terceros/TercerosModalSelector.vue";
 import VisualizadorFactura from "components/Facturas/VisualizadorFactura.vue";
 
 const mode = ref("ID");

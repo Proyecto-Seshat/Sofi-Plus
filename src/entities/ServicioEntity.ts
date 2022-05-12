@@ -1,25 +1,33 @@
 import {getNewDateString} from "src/api/utils/DateFormat";
-import {CodedEntity} from "src/store/Factory/StoreFactory";
 
-export class ServicioEntity implements CodedEntity{
-  codigo: string
-  descripcion: string
-  impuesto: number
-  costeUnitario: number
-  precioVenta: number
-  fechaCreacion: string
+export class ServicioEntity {
+  codigo: string;
+  descripcion: string;
+  impuesto: number;
+  precio: number;
+  fechaCreacion: string;
+  type: string;
+  recurso: string;
 
-  constructor({codigo, descripcion, costeUnitario, fechaCreacion, precioVenta, impuesto}: {codigo?: string, descripcion?: string, impuesto?: number, costeUnitario?: number, precioVenta?: number, fechaCreacion?: string}) {
-    this.codigo = codigo? codigo: "";
-    this.descripcion = descripcion? descripcion : "";
-    this.impuesto = impuesto? impuesto : 0;
-    this.costeUnitario = costeUnitario? costeUnitario : 0;
-    this.precioVenta = precioVenta? precioVenta : 0;
-    this.fechaCreacion = fechaCreacion? fechaCreacion : getNewDateString();
+  constructor({
+                codigo,
+                descripcion,
+                fechaCreacion,
+                precio,
+                impuesto,
+                recurso
+              }: { codigo?: string, descripcion?: string, impuesto?: number, costeUnitario?: number, precio?: number, fechaCreacion?: string, recurso?: string }) {
+    this.codigo = codigo ? codigo : "";
+    this.descripcion = descripcion ? descripcion : "";
+    this.impuesto = impuesto ? impuesto : 0;
+    this.precio = precio ? precio : 0;
+    this.fechaCreacion = fechaCreacion ? fechaCreacion : getNewDateString();
+    this.type = "SERVICIO";
+    this.recurso = recurso ? recurso : "";
   }
 
-  getCode(): string {
-    return this.codigo;
+  static getCode(servicio: ServicioEntity): string {
+    return servicio.codigo;
   }
 
 

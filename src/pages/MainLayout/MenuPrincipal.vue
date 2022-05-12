@@ -6,19 +6,37 @@
         <q-btn label="Print" @click="print" />
       </q-card-section>
     </q-card>
+    <q-linear-progress dark stripe rounded size="40px" :value="progress2" color="blue" class="q-mt-sm">
+      <div class="absolute-full flex flex-center">
+        <q-badge color="white" text-color="black" :label="progressLabel1" />
+      </div>
+    </q-linear-progress>
+    <trivia-component @points="addPoints" :question="question"/>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 
 import {RecursoNode, useRecursoStore} from "src/store/Recursos/recursoStore";
-import {RecursoEntity} from "src/entities/RecursoEntity";
 import {computed, ref} from "vue";
 import {useItemsStore} from "src/store/Items/itemsStore";
 import {useProveedoresStore} from "src/store/Proveedores/proveedoresStore";
 import {useServiciosStore} from "src/store/Servicios/serviciosStore";
+import TriviaComponent from "components/Ludificacion/TriviaComponent.vue";
 
 const recursoStore = useRecursoStore();
+
+const points = ref(0);
+const progress2 = ref(0.0);
+const progressLabel1 = ref("0/1000");
+
+const question = {
+  question: "Cual fue el mejor cameo de los illuminatis?",
+  a: "Profesor X",
+  b: "Reed Richards",
+  c: "Capitana Marvel",
+  d: "Capitana Carter"
+}
 
 function purge(){
   useItemsStore().purge();
@@ -27,6 +45,12 @@ function purge(){
 
 function print(){
   console.log(useProveedoresStore().items);
+}
+
+function addPoints(pointsFromTrivia: number){
+  points.value += pointsFromTrivia;
+  progress2.value = points.value/1000;
+  progressLabel1.value = `${points.value}/1000`;
 }
 
 function test(){

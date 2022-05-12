@@ -103,8 +103,8 @@ import ModalCancelar from "components/ModalCancelar.vue";
 import HelpableBtn from "components/Helpables/HelpableBtn.vue";
 import PresentadorUnitario from "components/PresentadorUnitario.vue";
 import {ComprobanteEgresoEntity} from "src/entities/ComprobanteEgresoEntity";
-import RecursoModalSelector from "components/RecursoModalSelector.vue";
-import TercerosModalSelector from "components/TercerosModalSelector.vue";
+import RecursoModalSelector from "components/Recursos/RecursoModalSelector.vue";
+import TercerosModalSelector from "components/Terceros/TercerosModalSelector.vue";
 import {useQuasar} from "quasar";
 
 const $q = useQuasar();

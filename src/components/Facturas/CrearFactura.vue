@@ -15,7 +15,8 @@
           <q-input ref="cantidadHTML" v-model.number="cantidad" label="Cantidad" placeholder="Ingrese cantidad"
                    type="number">
             <template v-slot:append>
-              <q-select v-model="cantidadUnidad" :options="cantidadOptions" emit-value map-options/>
+              <q-select v-if="selectedItemType == 'ITEM'" v-model="cantidadUnidad" :options="cantidadOptions"
+                        emit-value map-options/>
             </template>
           </q-input>
         </helpable-input>
@@ -121,7 +122,9 @@
   </q-card>
   <q-page-sticky v-if="!totalVisible" expand position="bottom">
       <span
-        class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{ presentCurrency(total) }}</b></span>
+        class="shadow-2 total bg-white full-width text-center"><b>Total factura: ${{
+          presentCurrency(total)
+        }}</b></span>
   </q-page-sticky>
 </template>
 
@@ -141,11 +144,12 @@ import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
 import {ItemEntity} from "src/entities/ItemEntity";
 import {FacturaEntity} from "src/entities/FacturaEntity";
 import {uid} from "quasar";
-import TercerosModalSelector from "components/TercerosModalSelector.vue";
+import TercerosModalSelector from "components/Terceros/TercerosModalSelector.vue";
 import {ClienteEntity} from "src/entities/ClienteEntity";
 import {ProveedorEntity} from "src/entities/ProveedorEntity";
 import {useFacturaStore} from "src/store/Facturas/facturaStore";
 import HelpableBtn from "components/Helpables/HelpableBtn.vue";
+import {ServicioEntity} from "src/entities/ServicioEntity";
 
 const $q = useQuasar();
 const stickyHeight = ref(0);
@@ -211,18 +215,24 @@ const esquema: ResponsiveTableSchemaField[] = [
     prefix: "$"
   }
 ];
-const selectedItem = ref<ItemEntity>(new ItemEntity({}));
+const selectedItem = ref<ItemEntity | ServicioEntity>(new ItemEntity({}));
+const selectedItemType = ref("ITEM");
 
 function selectItem() {
   $q.dialog({
     component: ItemsModalSelector,
-  }).onOk((articulo: ItemEntity) => {
-    selectedItem.value = articulo;
-    cantidadOptions.value = Object.entries(MeasureEngine.instance().getUnits(selectedItem.value.dimension)).map((value) => {
-      return {label: value[1].symbol, value: value[0]};
-    });
-    const baseUnit = MeasureEngine.instance().dimensions[selectedItem.value.dimension].baseUnit;
-    cantidadUnidad.value = MeasureEngine.instance().getUnits(selectedItem.value.dimension)[baseUnit].symbol;
+  }).onOk((item: ItemEntity | ServicioEntity) => {
+    selectedItem.value = item;
+    selectedItemType.value = item.type;
+    switch (item.type) {
+      case "ITEM":
+        cantidadOptions.value = Object.entries(MeasureEngine.instance().getUnits((item as ItemEntity).dimension)).map((value) => {
+          return {label: value[1].symbol, value: value[0]};
+        });
+        const baseUnit = MeasureEngine.instance().dimensions[(item as ItemEntity).dimension].baseUnit;
+        cantidadUnidad.value = MeasureEngine.instance().getUnits((item as ItemEntity).dimension)[baseUnit].symbol;
+        break;
+    }
     setTimeout(() => {
       cantidadHTML.value!.focus();
       cantidadHTML.value!.select();
@@ -249,7 +259,7 @@ const descuentoType = ref('%');
 
 function sell() {
   let descuentoLocal = '0%';
-  let total = selectedItem.value.precioVenta * cantidad.value;
+  let total = selectedItem.value.precio * cantidad.value;
   if (descuento.value !== 0) {
     if (descuentoType.value === '%') {
       total -= total * (descuento.value / 100);
@@ -263,7 +273,7 @@ function sell() {
     codigo: selectedItem.value.codigo,
     item: selectedItem.value.descripcion,
     impuesto: selectedItem.value.impuesto,
-    precio: selectedItem.value.precioVenta,
+    precio: selectedItem.value.precio,
     descuento: descuentoLocal,
     cantidad: cantidad.value,
     total: total

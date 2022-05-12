@@ -1,25 +1,27 @@
 <template>
-  <entity-managing-component :data="array" :entity-schema="serviciosSchema" entity="servicio" :store="store"/>
+  <entity-managing-component :data="array" :entity-schema="insumosSchema" entity="insumo" :store="store"/>
 </template>
 
 <script lang="ts" setup>
 import EntityManagingComponent from "components/EntityManagingComponent.vue";
-import {useServiciosStore} from "src/store/Servicios/serviciosStore";
+import {useItemsStore} from "src/store/Items/itemsStore";
 import {storeToRefs} from "pinia";
-import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
-import RecursoModalSelector from "components/RecursoModalSelector.vue";
 import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
+import {MeasureEngine} from "src/api/Items/MeasureEngine";
+import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
+import RecursoModalSelector from "components/Recursos/RecursoModalSelector.vue";
+import {useInsumosStore} from "src/store/Insumos/insumosStore";
 
-const serviciosSchema: EntityFieldSchema[] = [
-  {
-    field: "codigo",
-    label: "Codigo",
-    type: SchemaFieldType.STRING
-  },
+const insumosSchema: EntityFieldSchema[] = [
   {
     field: "descripcion",
     label: "Descripcion",
     responsive: true,
+    type: SchemaFieldType.STRING
+  },
+  {
+    field: "codigo",
+    label: "Codigo",
     type: SchemaFieldType.STRING
   },
   {
@@ -30,14 +32,8 @@ const serviciosSchema: EntityFieldSchema[] = [
     prefix: "%"
   },
   {
-    field: "costeUnitario",
-    label: "Coste Unitario",
-    responsive: true,
-    type: SchemaFieldType.NUMBER
-  },
-  {
-    field: "precioVenta",
-    label: "Precio de venta",
+    field: "costeVidaUtil",
+    label: "Coste por vida util",
     responsive: true,
     type: SchemaFieldType.NUMBER
   },
@@ -57,16 +53,17 @@ const serviciosSchema: EntityFieldSchema[] = [
     }
   },
   {
-    field: "fechaCreacion",
-    label: "Fecha de creación",
+    field: "fechaIngreso",
+    label: "Fecha de ingreso",
     responsive: true,
-    type: SchemaFieldType.DATE
+    type: SchemaFieldType.DATE,
+    showInTable: false
   }
 ];
 
-const store = useServiciosStore();
+const store = useInsumosStore();
 
-const { array } = storeToRefs(store);
+const {array} = storeToRefs(store);
 
 </script>
 

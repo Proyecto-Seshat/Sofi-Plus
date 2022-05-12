@@ -26,8 +26,10 @@ export const useFacturaStore = defineStore("factura", {
       }
       factura.detalles.forEach((itemFactura) => {
         const item: ItemEntity = itemsStore.get(itemFactura.codigo);
-        if (itemFactura.cantidad > item.cantidad) {
-          errors.push(`No hay suficiente ${item.descripcion}, quedan ${item.cantidad}${item.unidadPreferida}`);
+        if (item) {
+          if (itemFactura.cantidad > item.cantidad) {
+            errors.push(`No hay suficiente ${item.descripcion}, quedan ${item.cantidad}${item.unidadPreferida}`);
+          }
         }
       });
       return errors;
@@ -36,6 +38,9 @@ export const useFacturaStore = defineStore("factura", {
       this.facturasByID[factura.id] = factura;
       factura.detalles.forEach((itemFactura) => {
         itemsStore.affect(itemFactura.codigo, (item: ItemEntity) => {
+          if(!item){
+            return;
+          }
           item.cantidad -= itemFactura.cantidad;
           item.costeTotal -= item.costeUnitario * itemFactura.cantidad;
           return item;

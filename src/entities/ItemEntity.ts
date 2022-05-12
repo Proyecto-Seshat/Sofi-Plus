@@ -1,7 +1,6 @@
 import {getNewDateString} from "src/api/utils/DateFormat";
-import {CodedEntity} from "src/store/Factory/StoreFactory";
 
-export class ItemEntity implements CodedEntity{
+export class ItemEntity {
   codigo: string;
   descripcion: string;
   cantidad: number;
@@ -10,8 +9,10 @@ export class ItemEntity implements CodedEntity{
   impuesto: number;
   costeUnitario: number;
   costeTotal: number;
-  precioVenta: number;
+  precio: number;
   fechaIngreso: string;
+  type: string;
+  recurso: string;
 
 
   constructor({
@@ -21,11 +22,12 @@ export class ItemEntity implements CodedEntity{
                 descripcion,
                 fechaIngreso,
                 dimension,
-                precioVenta,
+                precio,
                 unidadPreferida,
                 impuesto,
-                cantidad
-              }: { codigo?: string, descripcion?: string, cantidad?: number, dimension?: string, unidadPreferida?: string, impuesto?: number, costeUnitario?: number, costeTotal?: number, precioVenta?: number, fechaIngreso?: string }) {
+                cantidad,
+                recurso
+              }: { codigo?: string, descripcion?: string, cantidad?: number, dimension?: string, unidadPreferida?: string, impuesto?: number, costeUnitario?: number, costeTotal?: number, precio?: number, fechaIngreso?: string, recurso?: string }) {
     this.codigo = codigo ? codigo : "";
     this.descripcion = descripcion ? descripcion : "";
     this.cantidad = cantidad ? cantidad : 0;
@@ -34,12 +36,14 @@ export class ItemEntity implements CodedEntity{
     this.impuesto = impuesto ? impuesto : 0;
     this.costeUnitario = costeUnitario ? costeUnitario : 0;
     this.costeTotal = costeTotal ? costeTotal : 0;
-    this.precioVenta = precioVenta ? precioVenta : 0;
+    this.precio = precio ? precio : 0;
     this.fechaIngreso = fechaIngreso ? fechaIngreso : getNewDateString();
+    this.type = "ITEM";
+    this.recurso = recurso ? recurso : "";
   }
 
-  getCode(): string {
-    return this.codigo;
+  static getCode(item: ItemEntity): string {
+    return item.codigo;
   }
 
 

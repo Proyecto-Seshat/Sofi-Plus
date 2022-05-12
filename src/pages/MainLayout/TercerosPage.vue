@@ -13,8 +13,8 @@
 
 <script lang="ts" setup>
 import TabPaneledPage from "components/TabPaneledPage.vue";
-import ClientesManagingComponent from "components/ClientesManagingComponent.vue";
-import ProveedoresManagingComponent from "components/ProveedoresManagingComponent.vue";
+import ClientesManagingComponent from "components/Clientes/ClientesManagingComponent.vue";
+import ProveedoresManagingComponent from "components/Proveedores/ProveedoresManagingComponent.vue";
 </script>
 
 <style lang="scss" scoped>

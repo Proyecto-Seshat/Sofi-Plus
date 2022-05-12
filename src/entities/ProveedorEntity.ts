@@ -1,6 +1,4 @@
-import {CodedEntity} from "src/store/Factory/StoreFactory";
-
-export class ProveedorEntity implements CodedEntity{
+export class ProveedorEntity {
   codigo: string;
   nombre: string;
   proveedorID: string;
@@ -20,8 +18,8 @@ export class ProveedorEntity implements CodedEntity{
     this.codigo = this.proveedorID;
   }
 
-  getCode(): string {
-    return this.proveedorID;
+  static getCode(proveedor: ProveedorEntity): string {
+    return proveedor.proveedorID;
   }
 
 

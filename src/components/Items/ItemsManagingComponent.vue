@@ -9,7 +9,7 @@ import {storeToRefs} from "pinia";
 import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 import {MeasureEngine} from "src/api/Items/MeasureEngine";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
-import RecursoModalSelector from "components/RecursoModalSelector.vue";
+import RecursoModalSelector from "components/Recursos/RecursoModalSelector.vue";
 
 const itemsSchema: EntityFieldSchema[] = [
   {
