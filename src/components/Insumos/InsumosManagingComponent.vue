@@ -14,15 +14,27 @@ import {useInsumosStore} from "src/store/Insumos/insumosStore";
 
 const insumosSchema: EntityFieldSchema[] = [
   {
+    field: "codigo",
+    label: "Codigo",
+    type: SchemaFieldType.STRING
+  },
+  {
     field: "descripcion",
     label: "Descripcion",
     responsive: true,
     type: SchemaFieldType.STRING
   },
   {
-    field: "codigo",
-    label: "Codigo",
-    type: SchemaFieldType.STRING
+    field: "cantidad",
+    label: "Cantidad",
+    responsive: true,
+    type: SchemaFieldType.NUMBER
+  },
+  {
+    field: "costo",
+    label: "Costo",
+    responsive: true,
+    type: SchemaFieldType.NUMBER
   },
   {
     field: "impuesto",
@@ -32,25 +44,17 @@ const insumosSchema: EntityFieldSchema[] = [
     prefix: "%"
   },
   {
-    field: "costeVidaUtil",
-    label: "Coste por vida util",
+    field: "unidadTiempo",
+    label: "Unidad tiempo vida util",
     responsive: true,
-    type: SchemaFieldType.NUMBER
+    type: SchemaFieldType.SELECTION,
+    options: ["Dias", "Meses", "Años"]
   },
   {
-    field: "recurso",
-    label: "Cuenta",
+    field: "vidaUtil",
+    label: "Vida util",
     responsive: true,
-    type: SchemaFieldType.DIALOG,
-    dialog: {
-      component: RecursoModalSelector,
-      onSuccess: (payload: any) => {
-        return payload;
-      },
-      onFailure: () => {
-        console.log("Fallo la seleccion");
-      }
-    }
+    type: SchemaFieldType.NUMBER
   },
   {
     field: "fechaIngreso",
