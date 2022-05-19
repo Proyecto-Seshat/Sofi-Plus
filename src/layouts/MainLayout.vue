@@ -92,9 +92,15 @@ const {capitalize} = format;
 const router = useRouter()
 
 const linksHabilitados = {
+  "MENÚ PRINCIPAL": true,
   "FACTURA DE  VENTA": true,
+  "RECIBOS DE CAJA": true,
+  "COMPROBANTES DE EGRESO": true,
+  "DEVOLUCIONES": true  ,
   "INVENTARIO": true,
-  "TERCEROS": true
+  "TERCEROS": true,
+
+
 };
 
 const helpInfo = computed(() => {

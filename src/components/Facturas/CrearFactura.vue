@@ -141,9 +141,7 @@ import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
 import {ItemEntity} from "src/entities/ItemEntity";
 import {FacturaEntity} from "src/entities/FacturaEntity";
 import {uid} from "quasar";
-import TercerosModalSelector from "components/TercerosModalSelector.vue";
-import {ClienteEntity} from "src/entities/ClienteEntity";
-import {ProveedorEntity} from "src/entities/ProveedorEntity";
+import TercerosModalSelector from "components/Terceros/TercerosModalSelector.vue";
 import {useFacturaStore} from "src/store/Facturas/facturaStore";
 import HelpableBtn from "components/Helpables/HelpableBtn.vue";
 
