@@ -1,5 +1,5 @@
 <template>
-  <entity-managing-component :data="array" :entity-schema="insumosSchema" entity="insumo" :store="store"/>
+  <entity-managing-component :data="array" :entity-schema="activosSchema" entity="activo" :store="store"/>
 </template>
 
 <script lang="ts" setup>
@@ -11,8 +11,9 @@ import {MeasureEngine} from "src/api/Items/MeasureEngine";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
 import RecursoModalSelector from "components/Recursos/RecursoModalSelector.vue";
 import {useInsumosStore} from "src/store/Insumos/insumosStore";
+import {useActivosStore} from "src/store/Activos/ActivosStore";
 
-const insumosSchema: EntityFieldSchema[] = [
+const activosSchema: EntityFieldSchema[] = [
   {
     field: "codigo",
     label: "Codigo",
@@ -44,6 +45,19 @@ const insumosSchema: EntityFieldSchema[] = [
     prefix: "%"
   },
   {
+    field: "unidadTiempo",
+    label: "Unidad tiempo vida util",
+    responsive: true,
+    type: SchemaFieldType.SELECTION,
+    options: ["Dias", "Meses", "Años"]
+  },
+  {
+    field: "vidaUtil",
+    label: "Vida util",
+    responsive: true,
+    type: SchemaFieldType.NUMBER
+  },
+  {
     field: "fechaIngreso",
     label: "Fecha de ingreso",
     responsive: true,
@@ -52,7 +66,7 @@ const insumosSchema: EntityFieldSchema[] = [
   }
 ];
 
-const store = useInsumosStore();
+const store = useActivosStore();
 
 const {array} = storeToRefs(store);
 

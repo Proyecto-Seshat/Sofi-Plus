@@ -41,7 +41,8 @@
       <div class="column drawer-overflow">
         <q-item v-for="(link, index) in getPermissions" :key="link" :to="`/usr=123456/${index}`"
                 active-class="link-activo"
-                class="link-inactivo" :disable="!linksHabilitados[link]">
+                class="link-inactivo">
+<!--          :disable="!linksHabilitados[link]"-->
           <q-item-section>
             <q-item-label class="text-right">{{ link }}</q-item-label>
           </q-item-section>
@@ -93,6 +94,7 @@ const router = useRouter()
 
 const linksHabilitados = {
   "FACTURA DE  VENTA": true,
+  "ACTIVOS": true,
   "INVENTARIO": true,
   "TERCEROS": true
 };

@@ -1,17 +1,7 @@
 <template>
   <q-page class="column q-ml-md">
-    <q-card flat>
-      <q-card-section>
-        <q-btn label="Purge" @click="purge" />
-        <q-btn label="Print" @click="print" />
-      </q-card-section>
-    </q-card>
-    <q-linear-progress dark stripe rounded size="40px" :value="progress2" color="blue" class="q-mt-sm">
-      <div class="absolute-full flex flex-center">
-        <q-badge color="white" text-color="black" :label="progressLabel1" />
-      </div>
-    </q-linear-progress>
-    <trivia-component @points="addPoints" :question="question"/>
+    <level-component/>
+    <trivia-component @points="triviaAnswer" :question="currentQuestion"/>
   </q-page>
 </template>
 
@@ -23,37 +13,68 @@ import {useItemsStore} from "src/store/Items/itemsStore";
 import {useProveedoresStore} from "src/store/Proveedores/proveedoresStore";
 import {useServiciosStore} from "src/store/Servicios/serviciosStore";
 import TriviaComponent from "components/Ludificacion/TriviaComponent.vue";
+import LevelComponent from "components/Ludificacion/LevelComponent.vue";
+import {useLudificacionStore} from "src/store/ludificacionStore";
 
+const store = useLudificacionStore();
 const recursoStore = useRecursoStore();
 
-const points = ref(0);
-const progress2 = ref(0.0);
-const progressLabel1 = ref("0/1000");
+const questions = [
+  {
+    question: "Cual fue el mejor cameo de los illuminatis?",
+    a: "Profesor X",
+    b: "Reed Richards",
+    c: "Capitana Marvel",
+    d: "Capitana Carter",
+    solution: "b"
+  },
+  {
+    question: "Como se llama la antitesis del darkhold?",
+    a: "Libro de vishanty",
+    b: "Mein Kampf",
+    c: "Clifford el gran perro rojo",
+    d: "El capital",
+    solution: "a"
+  },
+  {
+    question: "Que pasa si luis fonsi se da por vencido?",
+    a: "Big Crunch",
+    b: "Segundo periodo de Donald Trump",
+    c: "La presidencia de Petro",
+    d: "Nada",
+    solution: "d"
+  },
+];
 
-const question = {
-  question: "Cual fue el mejor cameo de los illuminatis?",
-  a: "Profesor X",
-  b: "Reed Richards",
-  c: "Capitana Marvel",
-  d: "Capitana Carter"
-}
+const window = ref(0);
 
-function purge(){
+const currentQuestion = computed(() => {
+  return questions[window.value];
+});
+
+function purge() {
   useItemsStore().purge();
   useServiciosStore().purge();
 }
 
-function print(){
+function print() {
   console.log(useProveedoresStore().items);
 }
 
-function addPoints(pointsFromTrivia: number){
-  points.value += pointsFromTrivia;
-  progress2.value = points.value/1000;
-  progressLabel1.value = `${points.value}/1000`;
+function triviaAnswer(pointsFromTrivia: number) {
+  if (pointsFromTrivia != 0) {
+    store.registerExp(pointsFromTrivia);
+  }
+  setTimeout(() => {
+    if (window.value < questions.length - 1) {
+      window.value += 1;
+    } else {
+      window.value = 0;
+    }
+  }, 200);
 }
 
-function test(){
+function test() {
   // const recursos:RecursoEntity[] = [
   //   {idRecurso: "1", cuenta: "Activo"},
   //   {idRecurso: "11", cuenta: "Disponible"},
@@ -74,10 +95,10 @@ function test(){
 
 const selected = ref("");
 
-const recursion:any = (node: RecursoNode) =>{
-  if(!node.children){
-    return { label: `${node.recurso.idRecurso}: ${node.recurso.cuenta}` }
-  }else{
+const recursion: any = (node: RecursoNode) => {
+  if (!node.children) {
+    return {label: `${node.recurso.idRecurso}: ${node.recurso.cuenta}`}
+  } else {
     return {
       label: `${node.recurso.idRecurso}: ${node.recurso.cuenta}`,
       children: Object.values(node.children).map(recursion)
@@ -85,9 +106,9 @@ const recursion:any = (node: RecursoNode) =>{
   }
 }
 
-const nodes = computed(()=>{
+const nodes = computed(() => {
   let res = [];
-  for(let clase of Object.values(recursoStore.recursosTree)){
+  for (let clase of Object.values(recursoStore.recursosTree)) {
     res.push(recursion(clase));
   }
   return res;
@@ -103,11 +124,11 @@ const nodes = computed(()=>{
   font-size: 4vh;
 }
 
-.recursoHeader:hover{
+.recursoHeader:hover {
   background: #9C27B0;
 }
 
-.recursoHeader{
+.recursoHeader {
   background: #2C5697;
 }
 

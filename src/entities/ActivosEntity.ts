@@ -1,11 +1,13 @@
 import {getNewDateString} from "src/api/utils/DateFormat";
 
-export class InsumoEntity {
+export class ActivosEntity {
   codigo: string;
   descripcion: string;
   impuesto: number;
   cantidad: number;
   costo: number;
+  vidaUtil: number;
+  unidadTiempo: string;
   fechaIngreso: string;
   type: string;
 
@@ -16,18 +18,20 @@ export class InsumoEntity {
                 descripcion,
                 fechaIngreso,
                 impuesto,
-                cantidad
-              }: { codigo?: string, descripcion?: string, impuesto?: number, costo?: number, fechaIngreso?: string, cantidad?: number }) {
+                cantidad, unidadTiempo, vidaUtil
+              }: { codigo?: string, descripcion?: string, impuesto?: number, costo?: number, fechaIngreso?: string, vidaUtil?: number, cantidad?: number, unidadTiempo?: string }) {
     this.codigo = codigo ? codigo : "";
     this.descripcion = descripcion ? descripcion : "";
     this.impuesto = impuesto ? impuesto : 0;
     this.costo = costo ? costo : 0;
     this.fechaIngreso = fechaIngreso ? fechaIngreso : getNewDateString();
-    this.type = "INSUMO";
+    this.type = "ACTIVO";
     this.cantidad = cantidad ? cantidad : 0;
+    this.unidadTiempo = unidadTiempo ? unidadTiempo : "Año";
+    this.vidaUtil = vidaUtil ? vidaUtil : 0;
   }
 
-  static getCode(insumo: InsumoEntity): string {
+  static getCode(insumo: ActivosEntity): string {
     return insumo.codigo;
   }
 

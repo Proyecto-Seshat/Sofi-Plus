@@ -18,10 +18,11 @@ const routes: RouteRecordRaw[] = [
       {path: '2', component: () => import('pages/MainLayout/ReciboDeCajaPage.vue')},
       {path: '3', component: () => import('pages/MainLayout/ComprobanteEgresoPage.vue')},
       {path: '4', component: () => import('pages/MainLayout/DevolucionPage.vue')},
-      {path: '5', component: () => import('pages/MainLayout/InventarioPage.vue')},
-      {path: '6', component: () => import('pages/MainLayout/TercerosPage.vue')},
-      {path: '7', component: () => import('pages/MainLayout/ReportesPage.vue')},
-      {path: '8', component: () => import('pages/MainLayout/InformesFinancierosPage.vue')}
+      {path: '5', component: () => import('pages/MainLayout/AcivosPage.vue')},
+      {path: '6', component: () => import('pages/MainLayout/InventarioPage.vue')},
+      {path: '7', component: () => import('pages/MainLayout/TercerosPage.vue')},
+      {path: '8', component: () => import('pages/MainLayout/ReportesPage.vue')},
+      {path: '9', component: () => import('pages/MainLayout/InformesFinancierosPage.vue')}
     ],
   },
 

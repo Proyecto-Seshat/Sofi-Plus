@@ -9,6 +9,7 @@ export const userStore = defineStore("User", {
         "RECIBOS DE CAJA",
         "COMPROBANTES DE EGRESO",
         "DEVOLUCIONES",
+        "ACTIVOS",
         "INVENTARIO",
         "TERCEROS",
         "REPORTES",
