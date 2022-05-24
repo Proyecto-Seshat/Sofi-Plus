@@ -1,22 +1,25 @@
 import {defineStore} from "pinia";
 import {UnwrapRef} from "vue";
 import {StoreFindStategy} from "src/store/Factory/StoreFindStategy";
+import {ApiController} from "src/api/ApiController";
 
 export interface StandardFactory<T> {
   items: { [key: string]: T },
   generateCode: string,
+  entity: any,
   array: T[],
   add: (item: T) => void,
   remove: (item: T) => void
 }
 
-export const storeFactory = function <T>(storeID: string, entity: any) {
+export const storeFactory = function <T>(storeID: string, entity: any, path: string) {
   return defineStore(storeID, {
     state: () => {
       let items: { [key: string]: T } = {};
       return {
         items: items,
-        codigo: ""
+        codigo: "",
+        entity: entity
       }
     },
     getters: {
@@ -31,11 +34,18 @@ export const storeFactory = function <T>(storeID: string, entity: any) {
       }
     },
     actions: {
-      add(item: T) {
+      async add(item: T) {
         const entityItem = new entity(item);
         this.items[entity.getCode(entityItem)] = entityItem as UnwrapRef<T>;
+        try {
+          console.log(item);
+          const response = await ApiController.post(path, item);
+          console.log(response);
+        } catch (e) {
+          console.log(e);
+        }
       },
-      remove(item: T) {
+      async remove(item: T) {
         delete this.items[entity.getCode(item)];
       },
       affect(codigo: string, effect: Function) {
@@ -46,15 +56,14 @@ export const storeFactory = function <T>(storeID: string, entity: any) {
       },
       purge() {
         this.items = {};
-        // for(let item in this.items){
-        //   console.log(item);
-        //   if(item === undefined){
-        //     delete this.items[item];
-        //   }
-        //   if(!this.items[item]){
-        //     delete this.items[item];
-        //   }
-        // }
+      },
+      async update(item: T) {
+
+      },
+      async sync(){
+        (await ApiController.catalog<T>(path)).forEach((item)=>{
+          this.add(item);
+        });
       }
     },
     persist: true

@@ -20,12 +20,14 @@ import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {userStore} from "src/store/userStore";
 import {useQuasar} from "quasar";
+import {ApiController} from "src/api/ApiController";
+import {syncBack} from "src/api/Sincronizador";
 
 const router = useRouter();
 const store = userStore();
 const $q = useQuasar();
 
-const users:{[key:string]: string} = {
+const users: { [key: string]: string } = {
   "jairo": "admin",
   "luisa": "manager",
   "sebas": "cashier"
@@ -33,18 +35,31 @@ const users:{[key:string]: string} = {
 
 const username = ref("");
 const pass = ref("");
-function login(){
-  if(users[username.value] || true){
-    store.login(username.value, users[username.value]? users[username.value] : "admin");
-    router.push("/usr=123456/1");
-  }else{
+
+async function login() {
+  if (users[username.value] || true) {
+    try {
+      const response = await ApiController.post("/auth/login", {
+        email: username.value,
+        password: pass.value
+      });
+      await store.login(response.data.nombre, response.data.rol, response.data.token);
+      await router.push(`/usr=123456/${store.getPermissions[0].key}`);
+      setTimeout(async () => {
+        await syncBack();
+      }, 1000);
+    } catch (e) {
+      console.log(e);
+      $q.notify("Credenciales invalidas");
+    }
+  } else {
     $q.notify("Usuario no encontrado");
   }
 }
 </script>
 
 <style scoped>
-.login-input{
+.login-input {
   width: 80%;
   text-align: center;
   font-size: 2.5vh;

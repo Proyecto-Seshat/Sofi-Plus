@@ -14,7 +14,7 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/"
+        :to="`/usr=123456/${store.getPermissions[0].key}`"
         label="Go Home"
         no-caps
       />
@@ -22,10 +22,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import {userStore} from "src/store/userStore";
 
-export default defineComponent({
-  name: 'Error404'
-})
+const store = userStore();
 </script>

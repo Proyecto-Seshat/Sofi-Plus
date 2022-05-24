@@ -14,7 +14,6 @@
 <script lang="ts" setup>
 import TabPaneledPage from "components/TabPaneledPage.vue";
 import CrearFactura from "components/Facturas/CrearFactura.vue";
-import VisualizadorFactura from "components/Facturas/VisualizadorFactura.vue";
 import {Ref, ref} from "vue";
 import {FacturaEntity} from "src/entities/FacturaEntity";
 import BuscarFactura from "components/Facturas/BuscarFactura.vue";

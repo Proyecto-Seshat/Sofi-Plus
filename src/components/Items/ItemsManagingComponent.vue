@@ -9,7 +9,6 @@ import {storeToRefs} from "pinia";
 import {EntityFieldSchema} from "src/api/interfaces/EntityInterfaces";
 import {MeasureEngine} from "src/api/Items/MeasureEngine";
 import {SchemaFieldType} from "src/api/enums/SchemaFieldType";
-import RecursoModalSelector from "components/Recursos/RecursoModalSelector.vue";
 
 const itemsSchema: EntityFieldSchema[] = [
   {
@@ -85,25 +84,10 @@ const itemsSchema: EntityFieldSchema[] = [
     showInTable: false
   },
   {
-    field: "precioVenta",
+    field: "precio",
     label: "Precio de venta",
     responsive: true,
     type: SchemaFieldType.NUMBER
-  },
-  {
-    field: "recurso",
-    label: "Cuenta",
-    responsive: true,
-    type: SchemaFieldType.DIALOG,
-    dialog: {
-      component: RecursoModalSelector,
-      onSuccess: (payload: any) => {
-        return payload;
-      },
-      onFailure: () => {
-        console.log("Fallo la seleccion");
-      }
-    }
   },
   {
     field: "fechaIngreso",

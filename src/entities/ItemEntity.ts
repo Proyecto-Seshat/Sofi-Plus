@@ -12,8 +12,6 @@ export class ItemEntity {
   precio: number;
   fechaIngreso: string;
   type: string;
-  recurso: string;
-
 
   constructor({
                 codigo,
@@ -25,9 +23,8 @@ export class ItemEntity {
                 precio,
                 unidadPreferida,
                 impuesto,
-                cantidad,
-                recurso
-              }: { codigo?: string, descripcion?: string, cantidad?: number, dimension?: string, unidadPreferida?: string, impuesto?: number, costeUnitario?: number, costeTotal?: number, precio?: number, fechaIngreso?: string, recurso?: string }) {
+                cantidad
+              }: { codigo?: string, descripcion?: string, cantidad?: number, dimension?: string, unidadPreferida?: string, impuesto?: number, costeUnitario?: number, costeTotal?: number, precio?: number, fechaIngreso?: string }) {
     this.codigo = codigo ? codigo : "";
     this.descripcion = descripcion ? descripcion : "";
     this.cantidad = cantidad ? cantidad : 0;
@@ -39,7 +36,6 @@ export class ItemEntity {
     this.precio = precio ? precio : 0;
     this.fechaIngreso = fechaIngreso ? fechaIngreso : getNewDateString();
     this.type = "ITEM";
-    this.recurso = recurso ? recurso : "";
   }
 
   static getCode(item: ItemEntity): string {

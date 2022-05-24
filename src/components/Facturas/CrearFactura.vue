@@ -145,11 +145,10 @@ import {ItemEntity} from "src/entities/ItemEntity";
 import {FacturaEntity} from "src/entities/FacturaEntity";
 import {uid} from "quasar";
 import TercerosModalSelector from "components/Terceros/TercerosModalSelector.vue";
-import {ClienteEntity} from "src/entities/ClienteEntity";
-import {ProveedorEntity} from "src/entities/ProveedorEntity";
 import {useFacturaStore} from "src/store/Facturas/facturaStore";
 import HelpableBtn from "components/Helpables/HelpableBtn.vue";
 import {ServicioEntity} from "src/entities/ServicioEntity";
+import {ApiController} from "src/api/ApiController";
 
 const $q = useQuasar();
 const stickyHeight = ref(0);
@@ -269,15 +268,35 @@ function sell() {
       descuentoLocal = `$${descuento.value}`
     }
   }
-  newFactura.value.detalles.push({
-    codigo: selectedItem.value.codigo,
-    item: selectedItem.value.descripcion,
-    impuesto: selectedItem.value.impuesto,
-    precio: selectedItem.value.precio,
-    descuento: descuentoLocal,
-    cantidad: cantidad.value,
-    total: total
-  });
+  if (selectedItem.value.type === "ITEM") {
+    let item: ItemEntity = <ItemEntity>selectedItem.value;
+    newFactura.value.detalles.push({
+      codigo: item.codigo,
+      item: item.descripcion,
+      impuesto: item.impuesto,
+      precio: item.precio,
+      costo: item.costeUnitario,
+      descuento: descuentoLocal,
+      cantidad: cantidad.value,
+      total: total,
+      costoTotal: item.costeUnitario * cantidad.value,
+      type: "ITEM"
+    });
+  } else {
+    let item: ServicioEntity = <ServicioEntity>selectedItem.value;
+    newFactura.value.detalles.push({
+      codigo: item.codigo,
+      item: item.descripcion,
+      impuesto: item.impuesto,
+      precio: item.precio,
+      costo: 0,
+      descuento: descuentoLocal,
+      cantidad: cantidad.value,
+      total: total,
+      costoTotal: 0,
+      type: "SERVICIO"
+    });
+  }
   selectedItem.value = new ItemEntity({});
   cantidad.value = 0;
   descuento.value = 0;
@@ -307,21 +326,40 @@ function resetData() {
   nombre.value = '';
 }
 
-function printFactura() {
-
-}
-
 function saveFactura() {
+  let costoTotal = 0;
+  let totalItems = 0;
+  let totalServicios = 0;
+  for (const item of newFactura.value.detalles) {
+    costoTotal += item.costoTotal ? item.costoTotal : 0;
+    switch (item.type) {
+      case "ITEM":
+        totalItems += item.total;
+        break;
+      case "SERVICIO":
+        totalServicios += item.total;
+        break;
+    }
+  }
+  newFactura.value.costoTotal = costoTotal;
   newFactura.value.total = total.value;
+  newFactura.value.totalItems = totalItems;
+  newFactura.value.totalServicios = totalServicios;
   emit("facturaCreada", newFactura.value);
-  const errors = facturaStore.validateFactura(newFactura.value);
+  const errors = facturaStore.validateDevolucion(newFactura.value);
   if (errors.length > 0) {
     errors.forEach(error => {
       $q.notify(error);
     });
   } else {
-    facturaStore.registerFactura(newFactura.value);
-    newFactura.value = new FacturaEntity({id: uid()});
+    try {
+      facturaStore.registerFactura(newFactura.value);
+      const response = ApiController.post("/factura", newFactura.value);
+      newFactura.value = new FacturaEntity({id: uid()});
+      $q.notify("Factura guardada exitosamente");
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 

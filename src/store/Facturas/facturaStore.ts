@@ -13,7 +13,7 @@ export const useFacturaStore = defineStore("factura", {
   },
   getters: {},
   actions: {
-    validateFactura(factura: FacturaEntity) {
+    validateDevolucion(factura: FacturaEntity) {
       const errors: string[] = [];
       if (factura.clienteID == "") {
         errors.push("Debe seleccionar un cliente");

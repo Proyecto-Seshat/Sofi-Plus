@@ -12,7 +12,9 @@ export class ClientesFindStrategy implements StoreFindStategy<ClienteEntity> {
 
   find(cliente: { [p: string]: UnwrapRef<ClienteEntity> }): ClienteEntity[] {
     return Object.values(cliente).filter((item) => {
-      return item.clienteID.toUpperCase().startsWith(this.filter.value.toUpperCase()) || item.nombre.toUpperCase().startsWith(this.filter.value.toUpperCase());
+      if (item) {
+        return item.clienteID.toUpperCase().startsWith(this.filter.value.toUpperCase()) || item.nombre.toUpperCase().startsWith(this.filter.value.toUpperCase());
+      }
     });
   }
 

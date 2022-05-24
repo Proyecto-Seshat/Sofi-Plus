@@ -2,7 +2,8 @@
   <div class="column justify-start q-gutter-y-sm">
     <responsive-table :actions="[
       {icon: 'edit_note', onClick: editAction, class: 'advance-btn'},
-      {icon: 'delete', onClick: deleteAction, class: 'revert-btn shadow-10'}
+      {icon: 'delete', onClick: deleteAction, class: 'revert-btn shadow-10'},
+      {icon: 'print', onClick: print, class: 'revert-btn shadow-10'}
     ]" :data="data" :schema="tableSchema">
     </responsive-table>
     <presentador v-if="newFlag || editFlag !== -1" :break="3">
@@ -202,11 +203,10 @@ function cancelAction() {
 }
 
 function saveAction() {
-  let newEntity: { [key: string]: any } = {};
+  let newEntity: { [key: string]: any } = new props.store.entity({});
   props.entitySchema.forEach(field => {
     newEntity[field.field] = holders[field.field].value;
   });
-  console.log(newEntity);
   props.store.add(newEntity);
   for (let field of props.entitySchema) {
     holders[field.field].value = resetField(field);
@@ -219,6 +219,10 @@ function editAction(item: any, itemIndex: number) {
     holders[field.field].value = item[field.field];
   });
   editFlag.value = itemIndex;
+}
+
+function print(item: any, itemIndex: number) {
+  console.log(item);
 }
 
 function editSaveAction() {

@@ -5,7 +5,7 @@
         <div :style="{'padding-top': stickyHeight + 'px'}" class="row items-center">
           <span class="titulo-pagina">Comprobante de egreso</span>
           <q-space/>
-          <span class="comprobante">Comprobante #123456</span>
+          <span class="comprobante">Comprobante {{ newEgreso.id }}</span>
         </div>
         <br>
         <presentador-unitario>
@@ -26,46 +26,12 @@
         <br>
         <presentador>
           <q-input label="Cantidad" v-model="newEgreso.cantidad"></q-input>
-          <q-input label="Suma en letras" v-model="newEgreso.cantidadEnLetras"></q-input>
           <q-input label="Por concepto de" v-model="newEgreso.porConceptoDe"></q-input>
         </presentador>
         <br>
         <presentador>
-          <q-btn class="full-width"
-                 :label="newEgreso.clienteID!==''? `Nit/CC: ${newEgreso.clienteID}` : `Recibido de`"
-                 @click="()=>{
-                   $q.dialog({
-                      component: TercerosModalSelector,
-                    }).onOk(payload => {newEgreso.clienteID = payload});
-                 }"
-          />
-          <q-input label="Recibido de" v-model="newEgreso.recibidoDe"></q-input>
-        </presentador>
-        <br>
-        <presentador-unitario>
-          <q-btn class="full-width"
-                 :label="newEgreso.cuenta!==''? `Cuenta: ${newEgreso.cuenta}` : `Seleccionar cuenta`"
-                 @click="()=>{
-                   $q.dialog({
-                      component: RecursoModalSelector,
-                    }).onOk(payload => {newEgreso.cuenta = payload});
-                 }"
-          />
-        </presentador-unitario>
-        <br>
-        <presentador>
-          <helpable-btn help-key="egreso:elaborado">
-            <q-input label="Elaborado por" v-model="newEgreso.elaboradoPor">
-              <template v-slot:append>
-                <q-icon name="info">
-                  <q-tooltip class="text-body2">
-                    Producto a vender
-                  </q-tooltip>
-                </q-icon>
-              </template>
-            </q-input>
-          </helpable-btn>
-          <q-input label="Aprobado por" v-model="newEgreso.aprobadoPor"></q-input>
+          <q-input label="Recibido de" v-model="newEgreso.clienteID" readonly @click="selectCliente"/>
+          <q-input label="Nombre" v-model="newEgreso.clienteNombre" readonly/>
         </presentador>
         <br>
         <button-group :btns="[
@@ -112,8 +78,21 @@ const $q = useQuasar();
 const stickyHeight = ref(0);
 const newEgreso: Ref<ComprobanteEgresoEntity> = ref(new ComprobanteEgresoEntity({}));
 
-function save(){
+function save() {
   console.log(newEgreso.value);
+}
+
+function selectCliente() {
+  $q.dialog({
+    component: TercerosModalSelector,
+  }).onOk((cliente: any) => {
+    if (cliente.clienteID) {
+      newEgreso.value.recibidoDe = cliente.clienteID;
+    } else {
+      newEgreso.value.recibidoDe = cliente.proveedorID;
+    }
+    newEgreso.value.clienteNombre = cliente.nombre;
+  });
 }
 
 </script>

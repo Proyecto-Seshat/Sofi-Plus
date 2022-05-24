@@ -12,7 +12,9 @@ export class ServiciosFindComposeStrategy implements StoreFindStategy<ServicioEn
 
   find(items: { [p: string]: UnwrapRef<ServicioEntity> }): ServicioEntity[] {
     return Object.values(items).filter((item) => {
-      return item.codigo.toUpperCase().startsWith(this.filter.value.toUpperCase()) || item.descripcion.toUpperCase().startsWith(this.filter.value.toUpperCase());
+      if (item) {
+        return item.codigo.toUpperCase().startsWith(this.filter.value.toUpperCase()) || item.descripcion.toUpperCase().startsWith(this.filter.value.toUpperCase());
+      }
     });
   }
 

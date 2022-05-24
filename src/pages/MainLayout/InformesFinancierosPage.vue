@@ -4,8 +4,7 @@
     <div class="col row justify-center">
       <div class="col-auto column justify-center q-gutter-y-lg" style="width: 80%">
         <span class="col-auto comprobante">Seleccione el tipo de informe que requiere:</span>
-        <q-btn class="col-auto advance-btn" label="Estado Flujo de Efectivo"/>
-        <q-btn class="col-auto advance-btn" label="Estado Flujos  de Resultados"/>
+        <q-btn class="col-auto advance-btn" label="Estado Flujos de Resultados"/>
         <q-btn class="col-auto advance-btn" label="Estado de Situación Financiero"/>
       </div>
     </div>

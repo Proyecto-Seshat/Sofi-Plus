@@ -39,12 +39,11 @@
         <img alt="escudo" src="/escudo.svg">
       </div>
       <div class="column drawer-overflow">
-        <q-item v-for="(link, index) in getPermissions" :key="link" :to="`/usr=123456/${index}`"
+        <q-item v-for="(link, index) in getPermissions" :key="link.label" :to="`/usr=123456/${link.key}`"
                 active-class="link-activo"
                 class="link-inactivo">
-<!--          :disable="!linksHabilitados[link]"-->
           <q-item-section>
-            <q-item-label class="text-right">{{ link }}</q-item-label>
+            <q-item-label class="text-right">{{ link.label }}</q-item-label>
           </q-item-section>
         </q-item>
       </div>
